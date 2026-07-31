@@ -36,7 +36,7 @@ const NEW_ARRIVALS: (ServiceItem & { discountTag: string; rating: number; review
     itemType: 'product',
     icon: '🌹',
     description: 'Chống oxy hóa mạnh mẽ, xua tan sắc tố sẫm màu mang lại làn da trắng hồng.',
-    image: 'https://images.unsplash.com/photo-1608248597263-000799965813?w=500&q=80',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxUx0I7kMptnVIGEp2UzQE0LKp7M9m9zx53w&s',
     discountTag: '50% Off',
     rating: 5.0,
     reviewCount: 89,
