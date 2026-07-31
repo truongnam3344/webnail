@@ -436,6 +436,47 @@ const INITIAL_DB_DATA = {
       status: "pending_confirmation",
       createdAt: new Date().toISOString()
     }
+  ],
+  reviews: [
+    {
+      id: "rev_1",
+      customerName: "Bessie Cooper",
+      role: "Khách hàng VIP",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80",
+      title: "The Best Thing I've Used For My Skin!",
+      comment: "Lumé Spa thực sự là chốn bình yên yêu thích của tôi sau những tuần làm việc căng thẳng. Liệu trình cấy Collagen Vàng 24K giúp làn da căng bóng và khỏe mạnh rõ rệt chỉ sau 1 buổi!",
+      rating: 5,
+      serviceName: "Cấy Tinh Chất Collagen & Vàng 24K",
+      date: "2026-07-20",
+      verified: true,
+      status: "approved"
+    },
+    {
+      id: "rev_2",
+      customerName: "Thanh Vân",
+      role: "Khách hàng Thân thiết",
+      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80",
+      title: "Gội Đầu Dưỡng Sinh & Massage Tuyệt Mới!",
+      comment: "Tay nghề kỹ thuật viên rất êm ái và nhẹ nhàng, mùi bồ kết sả chanh tự nhiên lưu lại cả ngày. Phòng Spa thơm ngát tinh dầu mang lại cảm giác cực kỳ thư thái.",
+      rating: 5,
+      serviceName: "Gội Đầu Dưỡng Sinh Thảo Dược Lumé",
+      date: "2026-07-22",
+      verified: true,
+      status: "approved"
+    },
+    {
+      id: "rev_3",
+      customerName: "Minh Trí & Phương Thảo",
+      role: "Khách hàng Đôi",
+      avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&q=80",
+      title: "Nail Art Vẽ Tay Đẹp Mắt & Bền Bỉ",
+      comment: "Sơn gel cao cấp không hề bị bong tróc dù mình hay làm việc nhà. Thiết kế mẫu móng đính đá vô cùng chỉn chu và đúng ý thích của mình!",
+      rating: 5,
+      serviceName: "Chăm Sóc Móng & Sơn Gel Cao Cấp",
+      date: "2026-07-25",
+      verified: true,
+      status: "approved"
+    }
   ]
 };
 
@@ -460,6 +501,7 @@ async function readDatabase() {
       specialists: parsed.specialists || INITIAL_DB_DATA.specialists,
       appointments: parsed.appointments || INITIAL_DB_DATA.appointments,
       productOrders: parsed.productOrders || INITIAL_DB_DATA.productOrders,
+      reviews: parsed.reviews || INITIAL_DB_DATA.reviews,
     };
   } catch (err) {
     console.error('[DB READ ERROR - Restoring initial data]', err);
@@ -641,6 +683,64 @@ async function startServer() {
       const { id } = req.params;
       const db = await readDatabase();
       db.productsCatalog = db.productsCatalog.filter((p: any) => p.id !== id);
+      await writeDatabase(db);
+      res.json({ success: true, deletedId: id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // REVIEWS API ENDPOINTS
+  app.get('/api/reviews', async (req, res) => {
+    try {
+      const db = await readDatabase();
+      res.json({ success: true, reviews: db.reviews || [] });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/reviews', async (req, res) => {
+    try {
+      const { review } = req.body;
+      if (!review) return res.status(400).json({ error: 'Missing review payload' });
+
+      const db = await readDatabase();
+      db.reviews = [review, ...(db.reviews || []).filter((r: any) => r.id !== review.id)];
+      await writeDatabase(db);
+      res.json({ success: true, review });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.put('/api/reviews/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const db = await readDatabase();
+
+      let updatedReview = null;
+      db.reviews = (db.reviews || []).map((r: any) => {
+        if (r.id === id) {
+          updatedReview = { ...r, ...updates };
+          return updatedReview;
+        }
+        return r;
+      });
+
+      await writeDatabase(db);
+      res.json({ success: true, review: updatedReview });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/reviews/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const db = await readDatabase();
+      db.reviews = (db.reviews || []).filter((r: any) => r.id !== id);
       await writeDatabase(db);
       res.json({ success: true, deletedId: id });
     } catch (err: any) {
