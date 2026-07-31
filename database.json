@@ -1,6 +1,14 @@
 {
   "users": [
     {
+      "id": "usr_admin_1",
+      "name": "Ban Quản Lý Lumé",
+      "email": "admin@lumespa.vn",
+      "phone": "0909999888",
+      "role": "admin",
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&q=80"
+    },
+    {
       "id": "usr_customer_1",
       "name": "Nguyễn Thị Lan",
       "email": "lan.nguyen@example.com",
@@ -46,14 +54,6 @@
       "role": "staff",
       "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&q=80",
       "specialistId": "sp1"
-    },
-    {
-      "id": "usr_admin_1",
-      "name": "Quản Lý Lumé Admin",
-      "email": "admin@lumespa.vn",
-      "phone": "0911223344",
-      "role": "admin",
-      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&q=80"
     }
   ],
   "loyaltyTiers": [
@@ -248,6 +248,84 @@
       "popular": false
     }
   ],
+  "productsCatalog": [
+    {
+      "id": "prod-hair-serum-grapefruit",
+      "category": "hair",
+      "title": "Serum Tinh Dầu Bưởi & Bồ Kết Tóc Dày Bồng Bềnh",
+      "subtitle": "Nuôi dưỡng nang tóc, giảm gãy rụng & kích thích mọc tóc con",
+      "price": 290000,
+      "originalPrice": 380000,
+      "duration": 0,
+      "stockQuantity": 45,
+      "icon": "🧴",
+      "description": "Chiết xuất 100% tinh dầu vỏ bưởi da xanh ép lạnh kết hợp cô đặc bồ kết nướng.",
+      "image": "https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80",
+      "popular": true,
+      "benefits": [
+        "Ngăn ngừa gãy rụng tóc",
+        "Kích thích mọc tóc nhanh",
+        "Mùi hương thảo mộc thư giãn"
+      ]
+    },
+    {
+      "id": "prod-facial-serum-ha",
+      "category": "facial",
+      "title": "Tinh Chất Serum HA Multi-Hydrating Căng Bóng Da",
+      "subtitle": "Cấp ẩm đa tầng, phục hồi hàng rào bảo vệ da căng mướt",
+      "price": 450000,
+      "originalPrice": 590000,
+      "duration": 0,
+      "stockQuantity": 30,
+      "icon": "💧",
+      "description": "Công thức ngậm nước Hyaluronic Acid 5 phân tử giúp da căng mọng ngay sau lần dùng đầu tiên.",
+      "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80",
+      "popular": true,
+      "benefits": [
+        "Cấp ẩm chuyên sâu 24h",
+        "Tái tạo da mịn màng",
+        "Phù hợp da nhạy cảm"
+      ]
+    },
+    {
+      "id": "prod-body-oil-lavender",
+      "category": "spa",
+      "title": "Dầu Massage Body Tinh Chất Hoa Oải Hương Lavender",
+      "subtitle": "Thư giãn thần kinh, giảm căng thẳng & dưỡng ẩm da toàn thân",
+      "price": 320000,
+      "originalPrice": 420000,
+      "duration": 0,
+      "stockQuantity": 60,
+      "icon": "🪻",
+      "description": "Dầu jojoba hữu cơ kết hợp tinh dầu Lavender Pháp giúp xua tan mệt mỏi.",
+      "image": "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=800&q=80",
+      "popular": true,
+      "benefits": [
+        "Giúp ngủ ngon sâu giấc",
+        "Mềm mịn da body",
+        "Không rít bết dính"
+      ]
+    },
+    {
+      "id": "prod-nail-cuticle-oil",
+      "category": "nail",
+      "title": "Tinh Dầu Dưỡng Viền Móng & Phục Hồi Móng Chắc Khỏe",
+      "subtitle": "Cung cấp Vitamin E & Keratin nuôi dưỡng móng sáng bóng",
+      "price": 150000,
+      "originalPrice": 200000,
+      "duration": 0,
+      "stockQuantity": 80,
+      "icon": "💅",
+      "description": "Chứa tinh dầu hạnh nhân và hạt argan bảo vệ móng sau khi làm nail.",
+      "image": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
+      "popular": false,
+      "benefits": [
+        "Chống giòn gãy móng",
+        "Làm mềm xước măng rô",
+        "Hương hoa quả ngọt dịu"
+      ]
+    }
+  ],
   "specialists": [
     {
       "id": "sp1",
@@ -302,6 +380,74 @@
       "discountAmount": 50000,
       "finalPrice": 200000,
       "createdAt": "2026-07-26T10:00:00.000Z"
+    }
+  ],
+  "productOrders": [
+    {
+      "id": "ORD-9910",
+      "customerName": "Phạm Hồng Nhung",
+      "customerPhone": "0933444555",
+      "customerEmail": "nhung.pham@gmail.com",
+      "shippingAddress": "78 Nguyễn Thị Minh Khai, Q.1, TP. Hồ Chí Minh",
+      "items": [
+        {
+          "id": "prod-hair-serum-grapefruit",
+          "title": "Serum Tinh Dầu Bưởi & Bồ Kết Tóc Dày Bồng Bềnh",
+          "price": 290000,
+          "quantity": 2,
+          "image": "https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80"
+        }
+      ],
+      "subtotal": 580000,
+      "shippingFee": 20000,
+      "discountAmount": 0,
+      "finalPrice": 600000,
+      "paymentMethod": "cod",
+      "paymentStatus": "unpaid",
+      "notes": "Khách muốn kiểm tra hàng trước khi thanh toán COD.",
+      "status": "pending_confirmation",
+      "createdAt": "2026-07-31T02:56:36.826Z"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "rev_1",
+      "customerName": "Bessie Cooper",
+      "role": "Khách hàng VIP",
+      "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80",
+      "title": "The Best Thing I've Used For My Skin!",
+      "comment": "Lumé Spa thực sự là chốn bình yên yêu thích của tôi sau những tuần làm việc căng thẳng. Liệu trình cấy Collagen Vàng 24K giúp làn da căng bóng và khỏe mạnh rõ rệt chỉ sau 1 buổi!",
+      "rating": 5,
+      "serviceName": "Cấy Tinh Chất Collagen & Vàng 24K",
+      "date": "2026-07-20",
+      "verified": true,
+      "status": "approved"
+    },
+    {
+      "id": "rev_2",
+      "customerName": "Thanh Vân",
+      "role": "Khách hàng Thân thiết",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80",
+      "title": "Gội Đầu Dưỡng Sinh & Massage Tuyệt Mới!",
+      "comment": "Tay nghề kỹ thuật viên rất êm ái và nhẹ nhàng, mùi bồ kết sả chanh tự nhiên lưu lại cả ngày. Phòng Spa thơm ngát tinh dầu mang lại cảm giác cực kỳ thư thái.",
+      "rating": 5,
+      "serviceName": "Gội Đầu Dưỡng Sinh Thảo Dược Lumé",
+      "date": "2026-07-22",
+      "verified": true,
+      "status": "approved"
+    },
+    {
+      "id": "rev_3",
+      "customerName": "Minh Trí & Phương Thảo",
+      "role": "Khách hàng Đôi",
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&q=80",
+      "title": "Nail Art Vẽ Tay Đẹp Mắt & Bền Bỉ",
+      "comment": "Sơn gel cao cấp không hề bị bong tróc dù mình hay làm việc nhà. Thiết kế mẫu móng đính đá vô cùng chỉn chu và đúng ý thích của mình!",
+      "rating": 5,
+      "serviceName": "Chăm Sóc Móng & Sơn Gel Cao Cấp",
+      "date": "2026-07-25",
+      "verified": true,
+      "status": "approved"
     }
   ]
 }
