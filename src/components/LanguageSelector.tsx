@@ -25,18 +25,18 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ compact = fa
   }, []);
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
+    <div className="relative inline-block text-left shrink-0" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-1.5 rounded-full border border-[#2d4a3e]/30 bg-white hover:bg-[#f7f4ee] transition-all cursor-pointer shadow-2xs ${
-          compact ? 'px-2.5 py-1 text-xs font-semibold' : 'px-3 py-1.5 text-xs font-bold text-[#1f2923]'
+        className={`flex items-center gap-1.5 rounded-full border border-[#2d4a3e]/30 bg-white hover:bg-[#f7f4ee] transition-all cursor-pointer shadow-2xs whitespace-nowrap shrink-0 ${
+          compact ? 'px-2 py-1 text-xs font-semibold' : 'px-2.5 py-1.5 text-xs font-bold text-[#1f2923]'
         }`}
         title="Choose Language / Chọn Ngôn Ngữ"
       >
-        <Globe className="w-3.5 h-3.5 text-[#2d4a3e]" />
-        <span className="text-sm">{currentLang.flag}</span>
-        <span className="hidden sm:inline font-medium text-[#1f2923]">{currentLang.name}</span>
-        <ChevronDown className="w-3 h-3 text-[#736860]" />
+        <Globe className="w-3.5 h-3.5 text-[#2d4a3e] shrink-0" />
+        <span className="text-sm shrink-0">{currentLang.flag}</span>
+        <span className="hidden sm:inline font-medium text-[#1f2923] whitespace-nowrap">{currentLang.name}</span>
+        <ChevronDown className="w-3 h-3 text-[#736860] shrink-0" />
       </button>
 
       {isOpen && (
