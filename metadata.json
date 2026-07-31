@@ -1,0 +1,6 @@
+{
+  "name": "Lumé Spa & Nail",
+  "description": "Hệ thống chăm sóc sắc đẹp và đặt lịch hẹn trực tuyến Lumé Spa & Nail",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

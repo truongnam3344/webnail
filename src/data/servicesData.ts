@@ -1,0 +1,219 @@
+import { ServiceItem } from '../types';
+
+export const SERVICES_DATA: ServiceItem[] = [
+  // --- SPA THƯ GIÃN (SERVICES) ---
+  {
+    id: 'spa-body-relax',
+    category: 'spa',
+    title: 'Massage Body Thư Giãn Tinh Dầu',
+    subtitle: 'Phục hồi thể chất & xua tan mệt mỏi',
+    price: 350000,
+    originalPrice: 450000,
+    duration: 60,
+    icon: '🪷',
+    popular: true,
+    itemType: 'service',
+    description: 'Kết hợp kỹ thuật miết vuốt nhẹ nhàng với tinh dầu thảo mộc organic giúp giảm căng cơ, ngủ ngon sâu giấc.',
+    image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80',
+    protocolSteps: [
+      'Khởi động ấn huyệt lưng & vai cổ',
+      'Thoa tinh dầu Oải Hương / Ngọc Lan Tây ấm',
+      'Đi ngải cứu và đá nóng xoa dịu vùng đau nhức',
+      'Massage tay, chân & ấn huyệt lòng bàn chân',
+      'Massage đầu cổ vai gáy và lau khăn ấm thảo dược'
+    ],
+    targetSkinOrBody: 'Phù hợp người làm việc văn phòng, đau mỏi vai gáy, mệt mỏi suy nhược.',
+    benefits: ['Giảm căng thẳng mệt mỏi', 'Tăng cường tuần hoàn máu', 'Cải thiện chất lượng giấc ngủ']
+  },
+  {
+    id: 'spa-hot-stone',
+    category: 'spa',
+    title: 'Massage Đá Nóng Năng Lượng Núi Lửa',
+    subtitle: 'Thải độc sâu & điều hòa khí huyết',
+    price: 480000,
+    originalPrice: 580000,
+    duration: 75,
+    icon: '🔥',
+    popular: true,
+    itemType: 'service',
+    description: 'Nhiệt lượng từ đá bazan núi Lửa truyền sâu vào các huyệt đạo giúp giải tỏa hàn khí và đả thông kinh lạc.',
+    image: 'https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=800&q=80',
+    protocolSteps: [
+      'Uống trà thảo mộc & ngâm chân muối gừng ấm',
+      'Ấn huyệt toàn thân mở các đường kinh lạc',
+      'Di chuyển đá nóng truyền nhiệt từng vùng lưng & vai',
+      'Đặt đá năng lượng dọc sống lưng',
+      'Thư giãn mặt và da đầu với khăn chườm thảo mộc'
+    ],
+    targetSkinOrBody: 'Dành cho người hay bị lạnh tay chân, khí huyết kém lưu thông, nhức mỏi lưng.',
+    benefits: ['Bài tiết độc tố qua da', 'Giải tỏa tắc nghẽn kinh lạc', 'Mang lại cảm giác ấm áp, thư thái']
+  },
+  {
+    id: 'spa-herbal-shampoo',
+    category: 'spa',
+    title: 'Gội Đầu Dưỡng Sinh Thảo Dược Lumé',
+    subtitle: 'Chăm sóc da đầu & massage thư giãn sâu',
+    price: 250000,
+    originalPrice: 320000,
+    duration: 60,
+    icon: '🌿',
+    popular: true,
+    itemType: 'service',
+    description: 'Sử dụng nước bồ kết nấu tươi kết hợp vỏ bưởi, sả, mần trầu giúp sạch gàu, kiềm dầu và chống gãy rụng.',
+    image: 'https://cdn.tgdd.vn/Files/2022/10/13/1478543/top-12-spa-goi-dau-duong-sinh-thao-duoc-tot-nhat-tai-tp-ho-chi-minh-202402271614220342.jpeg',
+    protocolSteps: [
+      'Khai thông huyệt vùng đầu & xoa bóp vai cổ gáy',
+      'Gội sạch lần 1 với dầu thảo mộc tự nhiên',
+      'Ấn huyệt da đầu & gội nước bồ kết cô đặc nóng',
+      'Ủ mượt tóc bằng kem ủ hạnh nhân',
+      'Tưới nước thảo mộc tuần hoàn & sấy tạo kiểu nhẹ nhàng'
+    ],
+    targetSkinOrBody: 'Mọi loại da đầu, đặc biệt người hay đau đầu, rụng tóc, stress công việc.',
+    benefits: ['Nuôi dưỡng chân tóc khỏe', 'Giải tỏa nhức đầu căng thẳng', 'Sạch gàu ngứa tự nhiên']
+  },
+
+  // --- CHĂM SÓC DA (FACIAL SERVICES) ---
+  {
+    id: 'facial-deep-clean',
+    category: 'facial',
+    title: 'Chăm Sóc Da Mặt Chuyên Sâu Deep Cleansing',
+    subtitle: 'Làm sạch sâu & thải độc bùn khoáng',
+    price: 390000,
+    originalPrice: 500000,
+    duration: 60,
+    icon: '✨',
+    popular: true,
+    itemType: 'service',
+    description: 'Quy trình chuẩn y khoa loại bỏ sợi bã nhờn, mụn đầu đen và tế bào chết mang lại làn da thông thoáng rạng rỡ.',
+    image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80',
+    protocolSteps: [
+      'Tẩy trang & rửa mặt sinh học dịu nhẹ',
+      'Tẩy tế bào chết enzyme hoa quả',
+      'Xông hơi thảo dược & hút sạch sợi bã nhờn',
+      'Massage nâng cơ mặt với serum HA cấp nước',
+      'Đắp mặt nạ Bùn khoáng / Hoa cúc làm dịu da',
+      'Chiếu ánh sáng sinh học vòm Omni Light',
+      'Thoa kem dưỡng cấp ẩm & kem chống nắng'
+    ],
+    targetSkinOrBody: 'Da dầu mụn, bít tắc lỗ chân lông, da xỉn màu do ô nhiễm.',
+    benefits: ['Thu nhỏ lỗ chân lông', 'Sáng mịn rạng rỡ', 'Cân bằng độ ẩm tự nhiên']
+  },
+  {
+    id: 'facial-collagen-glow',
+    category: 'facial',
+    title: 'Cấy Tinh Chất Collagen & Vàng 24K',
+    subtitle: 'Trẻ hóa da, căng bóng & mờ nếp nhăn',
+    price: 650000,
+    originalPrice: 850000,
+    duration: 75,
+    icon: '💎',
+    popular: true,
+    itemType: 'service',
+    description: 'Ứng dụng công nghệ điện di ion siêu âm đẩy sâu tinh chất Collagen tươi và lá vàng 24K nano giúp da bóng khỏe.',
+    image: 'https://rohtoaohalclinic.com.vn/vnt_upload/service/08_2018/dien-di-1.jpg',
+    protocolSteps: [
+      'Làm sạch sâu và cân bằng pH da bằng Toner hoa hồng',
+      'Tẩy tế bào chết bằng công nghệ Sóng siêu âm',
+      'Thoa Ampoule Collagen Peptide tươi',
+      'Đi máy Điện di Lạnh -10°C khóa ẩm tinh chất',
+      'Mặt nạ Vàng 24K nguyên chất dán phủ toàn mặt',
+      'Massage vai cổ gáy thư giãn trong lúc đắp nạ'
+    ],
+    targetSkinOrBody: 'Da bắt đầu lão hóa, da khô thiếu sức sống, da sau tuổi 25.',
+    benefits: ['Căng bóng mướt mịn tức thì', 'Mờ nếp nhăn li ti', 'Tăng độ đàn hồi cho da']
+  },
+
+  // --- NAIL & HAIR SERVICES ---
+  {
+    id: 'nail-gel-art',
+    category: 'nail',
+    title: 'Nail Gel Design Nghệ Thuật Premium',
+    subtitle: 'Chăm sóc móng & vẽ design theo yêu cầu',
+    price: 280000,
+    originalPrice: 350000,
+    duration: 60,
+    icon: '💅',
+    popular: true,
+    itemType: 'service',
+    description: 'Chăm sóc da tay kỹ lưỡng, sơn gel bóng đẹp bền màu đến 4 tuần với các mẫu vẽ tay, tráng gương, đính đá sang trọng.',
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&q=80',
+    protocolSteps: [
+      'Ngâm tay thảo mộc làm mềm móng',
+      'Nhặt da tỉ mỉ & tạo dáng móng (Nón, Vuông, Tròn, Oval)',
+      'Sơn lót dưỡng bảo vệ móng gốc',
+      'Sơn gel 2-3 lớp chuẩn màu sắc nét',
+      'Vẽ Art/Tráng gương/Đính charm theo Catalogue',
+      'Khóa bóng Top coat cao cấp không lo trầy xước',
+      'Dưỡng viền móng bằng tinh dầu Oliu'
+    ],
+    targetSkinOrBody: 'Chị em yêu thích thời trang móng, chuẩn bị đi tiệc, đám cưới, du lịch.',
+    benefits: ['Sơn bền bóng lâu trôi', 'Giữ form móng chuẩn đẹp', 'Không hại móng thật']
+  },
+
+  // --- SẢN PHẨM BÁN HÀNG (PRODUCTS FOR PURCHASE) ---
+  {
+    id: 'prod-cream-gold-24k',
+    category: 'facial',
+    title: 'Kem Dưỡng Da Vàng 24K & Peptide Collagen Lumé',
+    subtitle: 'Hũ 50ml - Trẻ hóa & Căng bóng da',
+    price: 680000,
+    originalPrice: 890000,
+    duration: 0,
+    icon: '🧴',
+    popular: true,
+    itemType: 'product',
+    stockQuantity: 45,
+    description: 'Chiết xuất vàng 24K nguyên chất kết hợp Niacinamide 5% và Peptide kép giúp mờ thâm nám, nuôi dưỡng làn da căng mượt tức thì.',
+    image: 'https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80',
+    benefits: ['Mờ thâm mờ nếp nhăn', 'Khóa ẩm sâu 24 giờ', 'Làn da phát sáng mịn màng']
+  },
+  {
+    id: 'prod-hair-serum-grapefruit',
+    category: 'hair',
+    title: 'Serum Tinh Dầu Bưởi & Bồ Kết Tóc Dày Bồng Bềnh',
+    subtitle: 'Chai xịt 100ml - Kích mọc tóc & Ngừa gãy rụng',
+    price: 290000,
+    originalPrice: 380000,
+    duration: 0,
+    icon: '🌿',
+    popular: true,
+    itemType: 'product',
+    stockQuantity: 60,
+    description: 'Chứa 98% tinh dầu vỏ bưởi ép lạnh kết hợp chiết xuất Hà Thủ Ô & Bồ Kết ép tươi nuôi dưỡng nang tóc phát triển khỏe mạnh.',
+    image: 'https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80',
+    benefits: ['Giảm rụng tóc rõ rệt sau 14 ngày', 'Mọc tóc con chắc khỏe', 'Mùi hương vỏ bưởi thư giãn']
+  },
+  {
+    id: 'prod-lavender-oil-organic',
+    category: 'spa',
+    title: 'Tinh Dầu Oải Hương Lavender Organic Nguyên Chất',
+    subtitle: 'Lọ 30ml - Thư giãn tinh thần & Dễ ngủ',
+    price: 320000,
+    originalPrice: 420000,
+    duration: 0,
+    icon: '🪷',
+    popular: false,
+    itemType: 'product',
+    stockQuantity: 30,
+    description: 'Tinh dầu Oải Hương đạt chứng nhận USDA Organic nhập khẩu trực tiếp từ Pháp, dùng xông phòng hoặc xoa bóp thái dương.',
+    image: 'https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80',
+    benefits: ['Xua tan muộn phiền stress', 'Cải thiện giấc ngủ sâu', 'Hương thơm tinh tế thanh lịch']
+  },
+  {
+    id: 'prod-nail-gel-set',
+    category: 'nail',
+    title: 'Bộ Sơn Gel Hàn Quốc Dưỡng Móng Cao Cấp Lumé',
+    subtitle: 'Set 6 màu Pastel thời thượng + Top coat',
+    price: 450000,
+    originalPrice: 600000,
+    duration: 0,
+    icon: '💅',
+    popular: true,
+    itemType: 'product',
+    stockQuantity: 25,
+    description: 'Set sơn gel hữu cơ an toàn cho móng, chuẩn tông màu Pastel Hàn Quốc dễ dùng hàng ngày, bền bóng không bóc tróc.',
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&q=80',
+    benefits: ['Màu sắc thời thượng chuẩn salon', 'An toàn không mỏng móng', 'Dễ tự sơn tại nhà']
+  }
+];
+

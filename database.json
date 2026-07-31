@@ -1,0 +1,307 @@
+{
+  "users": [
+    {
+      "id": "usr_customer_1",
+      "name": "Nguyễn Thị Lan",
+      "email": "lan.nguyen@example.com",
+      "phone": "0901234567",
+      "role": "customer",
+      "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&q=80",
+      "rewardPoints": 320,
+      "redeemedVouchers": [
+        {
+          "id": "v_welcome50",
+          "code": "WELCOME-LUME-50K",
+          "title": "Voucher Chào Mừng Khách Hàng Mới 50k",
+          "discountType": "amount",
+          "discountValue": 50000,
+          "pointsSpent": 0,
+          "redeemedAt": "2026-07-20",
+          "isUsed": false,
+          "validUntil": "2026-12-31"
+        }
+      ],
+      "pointTransactions": [
+        {
+          "id": "tx_init_1",
+          "date": "2026-07-13",
+          "points": 200,
+          "type": "earn",
+          "description": "Tích điểm dịch vụ Cấy Tinh Chất Collagen Vàng 24K"
+        },
+        {
+          "id": "tx_init_2",
+          "date": "2026-07-20",
+          "points": 120,
+          "type": "earn",
+          "description": "Tích điểm dịch vụ Gội Đầu Dưỡng Sinh & Chăm Sóc Da"
+        }
+      ]
+    },
+    {
+      "id": "usr_staff_1",
+      "name": "KTV Mai Phương",
+      "email": "mai.phuong@lumespa.vn",
+      "phone": "0988776655",
+      "role": "staff",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&q=80",
+      "specialistId": "sp1"
+    },
+    {
+      "id": "usr_admin_1",
+      "name": "Quản Lý Lumé Admin",
+      "email": "admin@lumespa.vn",
+      "phone": "0911223344",
+      "role": "admin",
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&q=80"
+    }
+  ],
+  "loyaltyTiers": [
+    {
+      "id": "bronze",
+      "name": "Thành Viên Bronze",
+      "badge": "🥉",
+      "minPoints": 0,
+      "discountPercent": 0,
+      "benefits": [
+        "Tích 1 điểm cho mỗi 10.000đ chi tiêu",
+        "Nhận ưu đãi sinh nhật 50k"
+      ]
+    },
+    {
+      "id": "silver",
+      "name": "Thành Viên Silver",
+      "badge": "🥈",
+      "minPoints": 200,
+      "discountPercent": 3,
+      "benefits": [
+        "Tích điểm x1.2 nhanh hơn",
+        "Giảm thêm 3% cho mọi dịch vụ",
+        "Quà tặng sinh nhật 100k"
+      ]
+    },
+    {
+      "id": "gold",
+      "name": "Thành Viên Gold",
+      "badge": "🥇",
+      "minPoints": 500,
+      "discountPercent": 5,
+      "benefits": [
+        "Tích điểm x1.5",
+        "Giảm thêm 5% cho mọi dịch vụ",
+        "Tặng 1 buổi Gội đầu thảo dược sinh nhật",
+        "Ưu tiên xếp lịch KTV VIP"
+      ]
+    },
+    {
+      "id": "diamond",
+      "name": "Thành Viên Diamond VIP",
+      "badge": "💎",
+      "minPoints": 1000,
+      "discountPercent": 10,
+      "benefits": [
+        "Tích điểm x2.0 siêu tốc",
+        "Giảm thêm 10% cho tất cả dịch vụ",
+        "Miễn phí Combo Spa Birthday",
+        "Phục vụ phòng VIP riêng biệt"
+      ]
+    }
+  ],
+  "rewardPackages": [
+    {
+      "id": "rew_50k",
+      "title": "Voucher Giảm 50.000đ",
+      "category": "voucher",
+      "pointsRequired": 50,
+      "valueText": "Giảm 50.000đ",
+      "valueAmount": 50000,
+      "description": "Áp dụng giảm trực tiếp trên tổng hóa đơn đặt lịch bất kỳ tại Lumé Spa.",
+      "icon": "🎟️"
+    },
+    {
+      "id": "rew_herbal",
+      "title": "Gói Gội Đầu Dưỡng Sinh Thảo Dược 0đ",
+      "category": "free_service",
+      "pointsRequired": 150,
+      "valueText": "Miễn phí 100% (250.000đ)",
+      "valueAmount": 250000,
+      "serviceTitle": "Gội Đầu Dưỡng Sinh Thảo Dược Lumé",
+      "description": "Nấu bồ kết tươi, sả, vỏ bưởi nguyên chất + Massage đầu cổ vai gáy 60 phút.",
+      "icon": "🌿",
+      "popular": true
+    },
+    {
+      "id": "rew_150k",
+      "title": "Voucher Giảm 150.000đ",
+      "category": "voucher",
+      "pointsRequired": 200,
+      "valueText": "Giảm 150.000đ",
+      "valueAmount": 150000,
+      "description": "Áp dụng cho hóa đơn dịch vụ chăm sóc da & body từ 400.000đ trở lên.",
+      "icon": "🏷️",
+      "minSpend": 400000
+    },
+    {
+      "id": "rew_massage",
+      "title": "Gói Massage Cổ Vai Gáy Chuyên Sâu 0đ",
+      "category": "free_service",
+      "pointsRequired": 250,
+      "valueText": "Miễn phí 100% (350.000đ)",
+      "valueAmount": 350000,
+      "serviceTitle": "Massage Cổ Vai Gáy Chuyên Sâu",
+      "description": "Ấn huyệt chuyên sâu giải tỏa nhức mỏi, chườm đá nóng Himalaya trị liệu.",
+      "icon": "💆",
+      "popular": true
+    },
+    {
+      "id": "rew_gold24k",
+      "title": "Gói Cấy Tinh Chất Collagen & Vàng 24K 0đ",
+      "category": "free_service",
+      "pointsRequired": 500,
+      "valueText": "Miễn phí 100% (650.000đ)",
+      "valueAmount": 650000,
+      "serviceTitle": "Cấy Tinh Chất Collagen & Vàng 24K",
+      "description": "Điện di ion tinh chất vàng 24K nano giúp da căng bóng, chống lão hóa & mờ nếp nhăn.",
+      "icon": "👑",
+      "popular": true
+    }
+  ],
+  "services": [
+    {
+      "id": "spa-body-relax",
+      "category": "spa",
+      "title": "Massage Body Thư Giãn Tinh Dầu",
+      "price": 350000,
+      "originalPrice": 450000,
+      "duration": 60,
+      "icon": "🪷",
+      "popular": true
+    },
+    {
+      "id": "spa-hot-stone",
+      "category": "spa",
+      "title": "Massage Đá Nóng Năng Lượng Núi Lửa",
+      "price": 480000,
+      "originalPrice": 580000,
+      "duration": 75,
+      "icon": "🔥",
+      "popular": true
+    },
+    {
+      "id": "spa-herbal-shampoo",
+      "category": "spa",
+      "title": "Gội Đầu Dưỡng Sinh Thảo Dược Lumé",
+      "price": 250000,
+      "originalPrice": 320000,
+      "duration": 60,
+      "icon": "🌿",
+      "popular": true
+    },
+    {
+      "id": "facial-deep-clean",
+      "category": "facial",
+      "title": "Chăm Sóc Da Mặt Chuyên SDeep Cleansing",
+      "price": 390000,
+      "originalPrice": 500000,
+      "duration": 60,
+      "icon": "✨",
+      "popular": true
+    },
+    {
+      "id": "facial-collagen-glow",
+      "category": "facial",
+      "title": "Cấy Tinh Chất Collagen & Vàng 24K",
+      "price": 650000,
+      "originalPrice": 850000,
+      "duration": 75,
+      "icon": "💎",
+      "popular": true
+    },
+    {
+      "id": "nail-[#1]",
+      "category": "nail",
+      "title": "Chăm Sóc Móng & Sơn Gel Cao Cấp",
+      "price": 180000,
+      "originalPrice": 250000,
+      "duration": 45,
+      "icon": "💅",
+      "popular": true
+    },
+    {
+      "id": "nail-foot-care",
+      "category": "nail",
+      "title": "Chà Gót Hồng & Chăm Sóc Móng Chân",
+      "price": 220000,
+      "originalPrice": 300000,
+      "duration": 50,
+      "icon": "🦶",
+      "popular": false
+    },
+    {
+      "id": "hair-wash-style",
+      "category": "hair",
+      "title": "Gội Đầu Thảo Dược & Sấy Tạo Kiểu",
+      "price": 120000,
+      "originalPrice": 180000,
+      "duration": 35,
+      "icon": "✂️",
+      "popular": false
+    }
+  ],
+  "specialists": [
+    {
+      "id": "sp1",
+      "name": "KTV Mai Phương",
+      "title": "Chuyên Gia Spa & Massage Body",
+      "experience": "6 năm kinh nghiệm",
+      "rating": 4.9,
+      "totalReviews": 328,
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&q=80"
+    },
+    {
+      "id": "sp2",
+      "name": "KTV Thu Hà",
+      "title": "Chuyên Viên Chăm Sóc Da Facial",
+      "experience": "5 năm kinh nghiệm",
+      "rating": 4.95,
+      "totalReviews": 412,
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&q=80"
+    },
+    {
+      "id": "sp3",
+      "name": "KTV Linh Chi",
+      "title": "Master Nail Art & Chăm Sóc Móng",
+      "experience": "4 năm kinh nghiệm",
+      "rating": 4.88,
+      "totalReviews": 256,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80"
+    }
+  ],
+  "appointments": [
+    {
+      "id": "LUME-8821",
+      "userId": "usr_customer_1",
+      "customerName": "Nguyễn Thị Lan",
+      "customerPhone": "0901234567",
+      "customerEmail": "lan.nguyen@example.com",
+      "date": "2026-07-28",
+      "timeSlot": "14:30",
+      "branch": "Chi nhánh Quận 1: 128 Nguyễn Trãi, P. Bến Thành, Q.1",
+      "selectedServices": [
+        {
+          "id": "spa-herbal-shampoo",
+          "title": "Gội Đầu Dưỡng Sinh Thảo Dược Lumé",
+          "price": 250000,
+          "duration": 60
+        }
+      ],
+      "specialistId": "sp1",
+      "specialistName": "KTV Mai Phương",
+      "status": "confirmed",
+      "totalPrice": 250000,
+      "discountAmount": 50000,
+      "finalPrice": 200000,
+      "createdAt": "2026-07-26T10:00:00.000Z"
+    }
+  ]
+}
