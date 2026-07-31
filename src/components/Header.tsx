@@ -111,7 +111,7 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-4 xl:space-x-7">
+          <nav className="hidden lg:flex items-center space-x-3 xl:space-x-6">
             {navLinks.map((link) => (
               <a
                 key={link.id}
@@ -120,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
                   e.preventDefault();
                   handleNavClick(link.href);
                 }}
-                className={`text-xs xl:text-sm font-medium transition-colors relative py-1 ${
+                className={`text-xs xl:text-sm font-medium transition-colors relative py-1 whitespace-nowrap ${
                   activeSection === link.id
                     ? 'text-[#2d4a3e] font-bold'
                     : 'text-[#524943] hover:text-[#2d4a3e]'
@@ -135,21 +135,21 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
 
           {/* Action Buttons & Auth Account */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             
             {/* USER LOGIN / ACCOUNT BADGE */}
             {currentUser ? (
-              <div className="relative">
+              <div className="relative shrink-0">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full bg-white border border-[#c9a86c]/40 hover:border-[#c9a86c] transition-all shadow-xs cursor-pointer"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white border border-[#c9a86c]/40 hover:border-[#c9a86c] transition-all shadow-xs cursor-pointer whitespace-nowrap shrink-0"
                 >
                   <img
                     src={currentUser.avatar || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&q=80'}
                     alt={currentUser.name}
-                    className="w-7 h-7 rounded-full object-cover shrink-0"
+                    className="w-6 h-6 sm:w-7 sm:h-7 rounded-full object-cover shrink-0"
                   />
-                  <div className="text-left hidden sm:block max-w-[110px] xl:max-w-[150px]">
+                  <div className="text-left hidden sm:block max-w-[100px] xl:max-w-[140px]">
                     <div className="text-xs font-bold text-[#3a2f2a] leading-tight truncate flex items-center gap-1">
                       <span className="truncate">{currentUser.name}</span>
                       {currentUser.role === 'customer' && (
@@ -221,10 +221,10 @@ export const Header: React.FC<HeaderProps> = ({
             ) : (
               <button
                 onClick={onOpenAuth}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-[#1f2923] hover:text-[#2d4a3e] bg-white hover:bg-[#f7f4ee] rounded-full border border-[#2d4a3e]/30 transition-all shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#1f2923] hover:text-[#2d4a3e] bg-white hover:bg-[#f7f4ee] rounded-full border border-[#2d4a3e]/30 transition-all shadow-xs cursor-pointer whitespace-nowrap shrink-0"
               >
-                <User className="w-3.5 h-3.5 text-[#2d4a3e]" />
-                <span className="hidden sm:inline">{t('nav.login')}</span>
+                <User className="w-3.5 h-3.5 text-[#2d4a3e] shrink-0" />
+                <span className="hidden sm:inline whitespace-nowrap">{t('nav.login')}</span>
               </button>
             )}
 
@@ -234,20 +234,20 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Tra cứu lịch button */}
             <button
               onClick={onOpenLookup}
-              className="hidden md:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-[#524943] hover:text-[#2d4a3e] bg-white/80 hover:bg-white rounded-full border border-[#e6dec8] transition-all shadow-xs cursor-pointer"
+              className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#524943] hover:text-[#2d4a3e] bg-white/80 hover:bg-white rounded-full border border-[#e6dec8] transition-all shadow-xs cursor-pointer whitespace-nowrap shrink-0"
               title={t('nav.lookup')}
             >
-              <Search className="w-3.5 h-3.5 text-[#2d4a3e]" />
-              <span>{t('nav.lookup')}</span>
+              <Search className="w-3.5 h-3.5 text-[#2d4a3e] shrink-0" />
+              <span className="whitespace-nowrap">{t('nav.lookup')}</span>
             </button>
 
             {/* Đặt lịch ngay button */}
             <button
               onClick={() => onOpenBooking()}
-              className="inline-flex items-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[#2d4a3e] hover:bg-[#1f362c] text-white shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold bg-[#2d4a3e] hover:bg-[#1f362c] text-white shadow-md hover:shadow-lg transition-all cursor-pointer whitespace-nowrap shrink-0"
             >
-              <Calendar className="w-4 h-4" />
-              <span>{t('nav.booking')}</span>
+              <Calendar className="w-4 h-4 shrink-0" />
+              <span className="whitespace-nowrap">{t('nav.booking')}</span>
             </button>
 
             {/* Mobile menu trigger */}
