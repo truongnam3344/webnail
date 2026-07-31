@@ -211,10 +211,10 @@ export const TestimonialsSection: React.FC = () => {
                 if (currentUser) setCustomerName(currentUser.name);
                 setIsModalOpen(true);
               }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#2d4a3e] hover:bg-[#1f342b] text-white font-medium text-xs sm:text-sm transition-all shadow-sm hover:shadow-md cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-[#2d4a3e] hover:bg-[#1f342b] text-white font-medium text-xs sm:text-sm transition-all shadow-sm hover:shadow-md cursor-pointer whitespace-nowrap shrink-0"
             >
-              <MessageSquarePlus className="w-4 h-4 text-amber-300" />
-              <span>Viết Đánh Giá & Ý Kiến Của Bạn</span>
+              <MessageSquarePlus className="w-4 h-4 text-amber-300 shrink-0" />
+              <span className="whitespace-nowrap">Viết Đánh Giá & Ý Kiến Của Bạn</span>
             </button>
           </div>
 
