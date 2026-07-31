@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   X, Calendar, DollarSign, Users, Sparkles, Search, Filter, CheckCircle2,
   Clock3, AlertCircle, Play, UserCheck, PlusCircle, Edit3, Trash2, TrendingUp, BarChart3, ShieldCheck, Mail,
-  ShoppingBag, Package, Tag, FileText, Check
+  ShoppingBag, Package, Tag, FileText, Check, MessageSquare, Star, Eye, EyeOff
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { EmailConfirmationModal } from './EmailConfirmationModal';
@@ -31,10 +31,13 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     assignSpecialist,
     addProduct,
     updateProductStock,
-    deleteProduct
+    deleteProduct,
+    reviews,
+    deleteReview,
+    updateReviewStatus
   } = useAuth();
   
-  const [activeTab, setActiveTab] = useState<'bookings' | 'product_orders' | 'services' | 'products' | 'staff' | 'analytics'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'product_orders' | 'services' | 'products' | 'staff' | 'reviews' | 'analytics'>('bookings');
   
   // Direct Add Staff local states
   const [showAddStaffModal, setShowAddStaffModal] = useState(false);
@@ -293,6 +296,18 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                 🔴 {allUsers.filter(u => (u.role === 'staff' || u.role === 'sales' || u.role === 'accountant') && u.isApproved === false).length}
               </span>
             )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab('reviews')}
+            className={`py-3 px-3 sm:px-4 text-xs font-bold transition-all border-b-2 flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'reviews'
+                ? 'border-[#c9a86c] text-[#3a2f2a] bg-white'
+                : 'border-transparent text-[#6b5c54] hover:text-[#3a2f2a]'
+            }`}
+          >
+            <MessageSquare className="w-4 h-4 text-[#c9a86c]" />
+            <span>Quản Lý Đánh Giá ({(reviews || []).length})</span>
           </button>
 
           <button
@@ -1225,7 +1240,112 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
             </div>
           )}
 
-          {/* TAB 6: REVENUE ANALYTICS */}
+          {/* TAB 6: REVIEWS MANAGEMENT */}
+          {activeTab === 'reviews' && (
+            <div className="space-y-4">
+              <div className="bg-white p-5 rounded-3xl border border-[#ebe3d9] space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-serif font-bold text-lg text-[#3a2f2a] flex items-center gap-2">
+                      <MessageSquare className="w-5 h-5 text-[#c9a86c]" />
+                      <span>Quản Lý Ý Kiến & Đánh Giá Khách Hàng</span>
+                    </h3>
+                    <p className="text-xs text-[#6b5c54] mt-0.5">
+                      Xem danh sách phản hồi thực tế từ khách hàng, duyệt hiển thị hoặc ẩn các bình luận không phù hợp.
+                    </p>
+                  </div>
+                  <div className="text-xs font-bold text-[#2d4a3e] bg-[#f7f1eb] px-3.5 py-1.5 rounded-full border border-[#ebe3d9]">
+                    Tổng cộng: {(reviews || []).length} đánh giá
+                  </div>
+                </div>
+
+                {(!reviews || reviews.length === 0) ? (
+                  <div className="p-8 text-center text-xs text-[#6b5c54] bg-[#f7f1eb] rounded-2xl italic border border-[#ebe3d9]">
+                    Chưa có đánh giá nào từ khách hàng.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {reviews.map((rev) => (
+                      <div
+                        key={rev.id}
+                        className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start justify-between gap-4 ${
+                          rev.status === 'hidden'
+                            ? 'bg-gray-50 border-gray-200 opacity-60'
+                            : 'bg-white border-[#ebe3d9] shadow-xs'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                          <img
+                            src={rev.avatar || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80'}
+                            alt={rev.customerName}
+                            className="w-12 h-12 rounded-full object-cover border border-[#ebe3d9] shrink-0"
+                          />
+                          <div className="space-y-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-serif font-bold text-sm text-[#3a2f2a]">{rev.customerName}</span>
+                              <span className="px-2 py-0.5 text-[10px] font-bold bg-[#f7f1eb] text-[#6b5c54] rounded-md">
+                                {rev.role || 'Khách hàng'}
+                              </span>
+                              {rev.serviceName && (
+                                <span className="px-2 py-0.5 text-[10px] font-bold bg-amber-50 text-amber-800 rounded-md border border-amber-200/60">
+                                  {rev.serviceName}
+                                </span>
+                              )}
+                              <span className="text-[10px] text-[#8c827a] ml-auto sm:ml-0">{rev.date}</span>
+                            </div>
+
+                            <div className="flex items-center gap-1 text-amber-500">
+                              {[...Array(rev.rating || 5)].map((_, i) => (
+                                <Star key={i} className="w-3.5 h-3.5 fill-current" />
+                              ))}
+                              <span className="text-xs font-bold text-[#3a2f2a] ml-1">"{rev.title}"</span>
+                            </div>
+
+                            <p className="text-xs text-[#524943] leading-relaxed italic bg-[#fbf9f5] p-2.5 rounded-xl border border-[#f0e8dc]">
+                              "{rev.comment}"
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Admin Action Buttons */}
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-start pt-2 sm:pt-0 border-t sm:border-t-0 border-[#f7f1eb] w-full sm:w-auto justify-end">
+                          {rev.status === 'hidden' ? (
+                            <button
+                              onClick={() => updateReviewStatus(rev.id, 'approved')}
+                              className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1 cursor-pointer"
+                              title="Hiển thị đánh giá này"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Hiển Thị</span>
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => updateReviewStatus(rev.id, 'hidden')}
+                              className="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-800 text-xs font-semibold rounded-xl transition-all flex items-center gap-1 cursor-pointer"
+                              title="Ẩn đánh giá này"
+                            >
+                              <EyeOff className="w-3.5 h-3.5" />
+                              <span>Ẩn</span>
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => deleteReview(rev.id)}
+                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer border border-rose-200"
+                            title="Xóa đánh giá"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 7: REVENUE ANALYTICS */}
           {activeTab === 'analytics' && (
             <div className="space-y-4">
               <div className="bg-white p-6 rounded-2xl border border-[#ebe3d9] space-y-4">
