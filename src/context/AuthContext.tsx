@@ -1,7 +1,49 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, UserRole, Appointment, RedeemedVoucher, PointTransaction, ProductOrder, OrderStatus, ServiceItem } from '../types';
+import { User, UserRole, Appointment, RedeemedVoucher, PointTransaction, ProductOrder, OrderStatus, ServiceItem, Review } from '../types';
 import { SERVICES_DATA } from '../data/servicesData';
 import { RewardPackage } from '../data/rewardsData';
+
+export const INITIAL_REVIEWS: Review[] = [
+  {
+    id: 'rev_1',
+    customerName: 'Bessie Cooper',
+    role: 'Khách hàng VIP',
+    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80',
+    title: "The Best Thing I've Used For My Skin!",
+    comment: 'Lumé Spa thực sự là chốn bình yên yêu thích của tôi sau những tuần làm việc căng thẳng. Liệu trình cấy Collagen Vàng 24K giúp làn da căng bóng và khỏe mạnh rõ rệt chỉ sau 1 buổi!',
+    rating: 5,
+    serviceName: 'Cấy Tinh Chất Collagen & Vàng 24K',
+    date: '2026-07-20',
+    verified: true,
+    status: 'approved',
+  },
+  {
+    id: 'rev_2',
+    customerName: 'Thanh Vân',
+    role: 'Khách hàng Thân thiết',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80',
+    title: 'Gội Đầu Dưỡng Sinh & Massage Tuyệt Mới!',
+    comment: 'Tay nghề kỹ thuật viên rất êm ái và nhẹ nhàng, mùi bồ kết sả chanh tự nhiên lưu lại cả ngày. Phòng Spa thơm ngát tinh dầu mang lại cảm giác cực kỳ thư thái.',
+    rating: 5,
+    serviceName: 'Gội Đầu Dưỡng Sinh Thảo Dược Lumé',
+    date: '2026-07-22',
+    verified: true,
+    status: 'approved',
+  },
+  {
+    id: 'rev_3',
+    customerName: 'Minh Trí & Phương Thảo',
+    role: 'Khách hàng Đôi',
+    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&q=80',
+    title: 'Nail Art Vẽ Tay Đẹp Mắt & Bền Bỉ',
+    comment: 'Sơn gel cao cấp không hề bị bong tróc dù mình hay làm việc nhà. Thiết kế mẫu móng đính đá vô cùng chỉn chu và đúng ý thích của mình!',
+    rating: 5,
+    serviceName: 'Chăm Sóc Móng & Sơn Gel Cao Cấp',
+    date: '2026-07-25',
+    verified: true,
+    status: 'approved',
+  },
+];
 
 // Initial default physical products from catalog
 const INITIAL_PRODUCTS_CATALOG: ServiceItem[] = SERVICES_DATA.filter(
@@ -241,12 +283,16 @@ interface AuthContextType {
   appointments: Appointment[];
   productOrders: ProductOrder[];
   productsCatalog: ServiceItem[];
+  reviews: Review[];
   addAppointment: (appointment: Appointment) => void;
   addProductOrder: (order: ProductOrder) => void;
   addProduct: (product: ServiceItem) => void;
   updateProductStock: (productId: string, newStock: number) => void;
   updateProduct: (product: ServiceItem) => void;
   deleteProduct: (productId: string) => void;
+  addReview: (review: Omit<Review, 'id' | 'date'> & { id?: string; date?: string }) => void;
+  deleteReview: (reviewId: string) => void;
+  updateReviewStatus: (reviewId: string, status: 'approved' | 'pending' | 'hidden') => void;
   updateAppointmentStatus: (
     id: string,
     status: OrderStatus,
@@ -302,6 +348,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return INITIAL_PRODUCTS_CATALOG;
   });
 
+  const [reviews, setReviews] = useState<Review[]>(() => {
+    const saved = localStorage.getItem('lume_reviews');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return INITIAL_REVIEWS;
+      }
+    }
+    return INITIAL_REVIEWS;
+  });
+
   // Fetch live database tables on mount
   useEffect(() => {
     fetch('/api/database')
@@ -312,6 +370,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (data.db.appointments && Array.isArray(data.db.appointments)) setAppointments(data.db.appointments);
           if (data.db.productOrders && Array.isArray(data.db.productOrders)) setProductOrders(data.db.productOrders);
           if (data.db.productsCatalog && Array.isArray(data.db.productsCatalog)) setProductsCatalog(data.db.productsCatalog);
+          if (data.db.reviews && Array.isArray(data.db.reviews)) setReviews(data.db.reviews);
         }
       })
       .catch(err => console.warn('[DB INITIAL FETCH WARN]', err));
@@ -326,10 +385,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setAppointments(data.db.appointments || []);
         setProductOrders(data.db.productOrders || []);
         setProductsCatalog(data.db.productsCatalog || []);
+        setReviews(data.db.reviews || INITIAL_REVIEWS);
         localStorage.removeItem('lume_all_users');
         localStorage.removeItem('lume_appointments');
         localStorage.removeItem('lume_product_orders');
         localStorage.removeItem('lume_products_catalog');
+        localStorage.removeItem('lume_reviews');
       }
     } catch (err) {
       console.error('[DB RESET ERROR]', err);
@@ -364,6 +425,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     localStorage.setItem('lume_products_catalog', JSON.stringify(productsCatalog));
   }, [productsCatalog]);
+
+  useEffect(() => {
+    localStorage.setItem('lume_reviews', JSON.stringify(reviews));
+  }, [reviews]);
+
+  const addReview = (reviewPayload: Omit<Review, 'id' | 'date'> & { id?: string; date?: string }) => {
+    const newRev: Review = {
+      id: reviewPayload.id || `rev_${Date.now()}`,
+      date: reviewPayload.date || new Date().toISOString().split('T')[0],
+      customerName: reviewPayload.customerName || 'Khách hàng Lumé',
+      role: reviewPayload.role || 'Khách hàng Thân thiết',
+      avatar: reviewPayload.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80',
+      title: reviewPayload.title || 'Đánh giá dịch vụ tuyệt vời!',
+      comment: reviewPayload.comment,
+      rating: reviewPayload.rating || 5,
+      serviceName: reviewPayload.serviceName || 'Dịch vụ Spa',
+      verified: reviewPayload.verified ?? true,
+      status: reviewPayload.status || 'approved',
+    };
+
+    setReviews(prev => [newRev, ...prev]);
+    fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ review: newRev }),
+    }).catch(err => console.error('[DB ADD REVIEW ERROR]', err));
+  };
+
+  const deleteReview = (reviewId: string) => {
+    setReviews(prev => prev.filter(r => r.id !== reviewId));
+    fetch(`/api/reviews/${reviewId}`, { method: 'DELETE' }).catch(err => console.error('[DB DELETE REVIEW ERROR]', err));
+  };
+
+  const updateReviewStatus = (reviewId: string, status: 'approved' | 'pending' | 'hidden') => {
+    setReviews(prev => prev.map(r => r.id === reviewId ? { ...r, status } : r));
+    fetch(`/api/reviews/${reviewId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    }).catch(err => console.error('[DB REVIEW STATUS ERROR]', err));
+  };
 
   const quickLogin = (role: UserRole) => {
     setCurrentUser(DEMO_USERS[role] || DEMO_USERS.customer);
@@ -886,12 +988,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         appointments,
         productOrders,
         productsCatalog,
+        reviews,
         addAppointment,
         addProductOrder,
         addProduct,
         updateProductStock,
         updateProduct,
         deleteProduct,
+        addReview,
+        deleteReview,
+        updateReviewStatus,
         updateAppointmentStatus,
         updateProductOrderStatus,
         issueInvoice,
