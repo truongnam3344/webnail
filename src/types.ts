@@ -158,10 +158,13 @@ export interface Review {
   id: string;
   customerName: string;
   avatar?: string;
+  role?: string;
+  title?: string;
   rating: number;
-  serviceName: string;
+  serviceName?: string;
   date: string;
   comment: string;
-  verified: boolean;
+  verified?: boolean;
+  status?: 'approved' | 'pending' | 'hidden';
 }
 
