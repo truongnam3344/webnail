@@ -37,7 +37,7 @@ const BEST_SELLER_PRODUCTS: (ServiceItem & { discountTag?: string; rating: numbe
     itemType: 'product',
     icon: '💎',
     description: 'Chứa Vitamin C tinh khiết 15% cùng Hyaluronic Acid giúp làn da bật tông trắng sáng rạng rỡ.',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6a2iFM7ICM95ykh7nrYuKLNLgQ2yYjRHFAA&s',
+    image: 'https://tse3.mm.bing.net/th/id/OIP.eFrezuv-sdHSr72mz5y49gHaNK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
     popular: true,
     discountTag: '25% Off',
     rating: 4.8,

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import {
   X, Calendar, DollarSign, Users, Sparkles, Search, Filter, CheckCircle2,
   Clock3, AlertCircle, Play, UserCheck, PlusCircle, Edit3, Trash2, TrendingUp, BarChart3, ShieldCheck, Mail,
-  ShoppingBag, Package, Tag, FileText, Check, MessageSquare, Star, Eye, EyeOff
+  ShoppingBag, Package, Tag, FileText, Check, MessageSquare, Star, Eye, EyeOff, Instagram, Image as ImageIcon
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, NewArrivalItem, InstaPhotoItem } from '../context/AuthContext';
 import { EmailConfirmationModal } from './EmailConfirmationModal';
 import { SERVICES_DATA as INITIAL_SERVICES } from '../data/servicesData';
 import { SPECIALISTS_DATA as INITIAL_SPECIALISTS } from '../data/specialistsData';
@@ -34,10 +34,36 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     deleteProduct,
     reviews,
     deleteReview,
-    updateReviewStatus
+    updateReviewStatus,
+    newArrivals,
+    addNewArrival,
+    updateNewArrival,
+    deleteNewArrival,
+    instaPhotos,
+    addInstaPhoto,
+    deleteInstaPhoto,
   } = useAuth();
   
-  const [activeTab, setActiveTab] = useState<'bookings' | 'product_orders' | 'services' | 'products' | 'staff' | 'reviews' | 'analytics'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'product_orders' | 'services' | 'products' | 'staff' | 'reviews' | 'analytics' | 'new_arrivals' | 'insta'>('bookings');
+  
+  // New Arrivals management state
+  const [showAddArrival, setShowAddArrival] = useState(false);
+  const [editingArrival, setEditingArrival] = useState<NewArrivalItem | null>(null);
+  const [arrTitle, setArrTitle] = useState('');
+  const [arrSubtitle, setArrSubtitle] = useState('');
+  const [arrPrice, setArrPrice] = useState('');
+  const [arrOriginalPrice, setArrOriginalPrice] = useState('');
+  const [arrDiscountTag, setArrDiscountTag] = useState('50% Off');
+  const [arrRating, setArrRating] = useState('4.9');
+  const [arrReviewCount, setArrReviewCount] = useState('50');
+  const [arrImage, setArrImage] = useState('');
+  const [arrIcon, setArrIcon] = useState('💧');
+  const [arrDesc, setArrDesc] = useState('');
+  const [arrCategory, setArrCategory] = useState<'facial' | 'spa' | 'hair' | 'nail'>('facial');
+
+  // Instagram Gallery management state
+  const [showAddInsta, setShowAddInsta] = useState(false);
+  const [instaUrl, setInstaUrl] = useState('');
   
   // Direct Add Staff local states
   const [showAddStaffModal, setShowAddStaffModal] = useState(false);
@@ -171,6 +197,71 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     setNewProdStock('50');
     setNewProdDesc('');
     setShowAddProduct(false);
+  };
+
+  const handleSaveArrival = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!arrTitle || !arrPrice) return;
+
+    const itemData: NewArrivalItem = {
+      id: editingArrival ? editingArrival.id : `arr_${Date.now()}`,
+      category: arrCategory,
+      title: arrTitle,
+      subtitle: arrSubtitle || 'Sản phẩm mới ra mắt',
+      price: parseInt(arrPrice, 10),
+      originalPrice: arrOriginalPrice ? parseInt(arrOriginalPrice, 10) : undefined,
+      duration: 0,
+      itemType: 'product',
+      icon: arrIcon || '✨',
+      description: arrDesc || 'Sản phẩm cao cấp mới ra mắt tại Lumé Spa.',
+      image: arrImage || 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&q=80',
+      discountTag: arrDiscountTag || '50% Off',
+      rating: parseFloat(arrRating) || 5.0,
+      reviewCount: parseInt(arrReviewCount, 10) || 50,
+    };
+
+    if (editingArrival) {
+      updateNewArrival(itemData);
+    } else {
+      addNewArrival(itemData);
+    }
+
+    setEditingArrival(null);
+    setShowAddArrival(false);
+    setArrTitle('');
+    setArrSubtitle('');
+    setArrPrice('');
+    setArrOriginalPrice('');
+    setArrImage('');
+    setArrDesc('');
+  };
+
+  const openEditArrival = (item: NewArrivalItem) => {
+    setEditingArrival(item);
+    setArrTitle(item.title);
+    setArrSubtitle(item.subtitle || '');
+    setArrPrice(item.price.toString());
+    setArrOriginalPrice(item.originalPrice ? item.originalPrice.toString() : '');
+    setArrDiscountTag(item.discountTag || '50% Off');
+    setArrRating((item.rating || 5.0).toString());
+    setArrReviewCount((item.reviewCount || 50).toString());
+    setArrImage(item.image || '');
+    setArrIcon(item.icon || '💧');
+    setArrDesc(item.description || '');
+    setArrCategory((item.category as any) || 'facial');
+    setShowAddArrival(true);
+  };
+
+  const handleAddInstaPhotoSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!instaUrl) return;
+    const newPhoto: InstaPhotoItem = {
+      id: `insta_${Date.now()}`,
+      url: instaUrl,
+    };
+    addInstaPhoto(newPhoto);
+    setInstaUrl('');
+    setShowAddInsta(false);
   };
 
   return (
@@ -308,6 +399,30 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
           >
             <MessageSquare className="w-4 h-4 text-[#c9a86c]" />
             <span>Quản Lý Đánh Giá ({(reviews || []).length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('new_arrivals')}
+            className={`py-3 px-3 sm:px-4 text-xs font-bold transition-all border-b-2 flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'new_arrivals'
+                ? 'border-[#c9a86c] text-[#3a2f2a] bg-white'
+                : 'border-transparent text-[#6b5c54] hover:text-[#3a2f2a]'
+            }`}
+          >
+            <Tag className="w-4 h-4 text-[#c9a86c]" />
+            <span>Sản Phẩm Mới ({(newArrivals || []).length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('insta')}
+            className={`py-3 px-3 sm:px-4 text-xs font-bold transition-all border-b-2 flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'insta'
+                ? 'border-[#c9a86c] text-[#3a2f2a] bg-white'
+                : 'border-transparent text-[#6b5c54] hover:text-[#3a2f2a]'
+            }`}
+          >
+            <Instagram className="w-4 h-4 text-[#c9a86c]" />
+            <span>Thư Viện Instagram ({(instaPhotos || []).length})</span>
           </button>
 
           <button
@@ -1341,6 +1456,340 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                     ))}
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6.5: NEW ARRIVALS MANAGEMENT */}
+          {activeTab === 'new_arrivals' && (
+            <div className="space-y-4">
+              <div className="bg-white p-5 rounded-3xl border border-[#ebe3d9] space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-serif font-bold text-lg text-[#3a2f2a] flex items-center gap-2">
+                      <Tag className="w-5 h-5 text-[#c9a86c]" />
+                      <span>Quản Lý Sản Phẩm Mới (New Arrivals)</span>
+                    </h3>
+                    <p className="text-xs text-[#6b5c54] mt-0.5">
+                      Tùy chỉnh danh sách các sản phẩm mới ra mắt hiển thị ở trang chủ.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setEditingArrival(null);
+                      setArrTitle('');
+                      setArrSubtitle('');
+                      setArrPrice('');
+                      setArrOriginalPrice('');
+                      setArrImage('');
+                      setArrDesc('');
+                      setShowAddArrival(true);
+                    }}
+                    className="px-4 py-2 bg-[#2d4a3e] hover:bg-[#1f352c] text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <PlusCircle className="w-4 h-4" />
+                    <span>Thêm Mới Mùa Này</span>
+                  </button>
+                </div>
+
+                {/* Add/Edit Arrival Modal/Form */}
+                {showAddArrival && (
+                  <form onSubmit={handleSaveArrival} className="p-4 bg-[#fbf9f5] rounded-2xl border border-[#c9a86c]/30 space-y-3 animate-in fade-in">
+                    <div className="flex justify-between items-center border-b border-[#ebe3d9] pb-2">
+                      <h4 className="font-serif font-bold text-sm text-[#3a2f2a]">
+                        {editingArrival ? 'Chỉnh Sửa Sản Phẩm Mới' : 'Thêm Sản Phẩm Mới Vào Trang Chủ'}
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddArrival(false)}
+                        className="text-xs text-gray-400 hover:text-gray-600"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Tên sản phẩm *</label>
+                        <input
+                          type="text"
+                          required
+                          value={arrTitle}
+                          onChange={(e) => setArrTitle(e.target.value)}
+                          placeholder="Ví dụ: Aquafresh Wellness Serum"
+                          className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Mô tả ngắn (Subtitle)</label>
+                        <input
+                          type="text"
+                          value={arrSubtitle}
+                          onChange={(e) => setArrSubtitle(e.target.value)}
+                          placeholder="Ví dụ: Tinh chất cấp nước khóa ẩm 72h"
+                          className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Danh mục</label>
+                        <select
+                          value={arrCategory}
+                          onChange={(e) => setArrCategory(e.target.value as any)}
+                          className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        >
+                          <option value="facial">Chăm sóc da mặt (Facial)</option>
+                          <option value="spa">Trị liệu body (Spa)</option>
+                          <option value="hair">Chăm sóc tóc (Hair)</option>
+                          <option value="nail">Chăm sóc móng (Nail)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Giá bán (VNĐ) *</label>
+                        <input
+                          type="number"
+                          required
+                          value={arrPrice}
+                          onChange={(e) => setArrPrice(e.target.value)}
+                          placeholder="350000"
+                          className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Giá gốc (VNĐ)</label>
+                        <input
+                          type="number"
+                          value={arrOriginalPrice}
+                          onChange={(e) => setArrOriginalPrice(e.target.value)}
+                          placeholder="700000"
+                          className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Nhãn ưu đãi (Discount Tag)</label>
+                        <input
+                          type="text"
+                          value={arrDiscountTag}
+                          onChange={(e) => setArrDiscountTag(e.target.value)}
+                          placeholder="50% Off / NEW"
+                          className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Link Ảnh Sản Phẩm (URL)</label>
+                        <input
+                          type="url"
+                          value={arrImage}
+                          onChange={(e) => setArrImage(e.target.value)}
+                          placeholder="https://images.unsplash.com/..."
+                          className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Đánh giá (Star Rating)</label>
+                        <input
+                          type="text"
+                          value={arrRating}
+                          onChange={(e) => setArrRating(e.target.value)}
+                          placeholder="4.9"
+                          className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Số lượt mua/đánh giá</label>
+                        <input
+                          type="number"
+                          value={arrReviewCount}
+                          onChange={(e) => setArrReviewCount(e.target.value)}
+                          placeholder="64"
+                          className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Mô tả chi tiết</label>
+                      <textarea
+                        rows={2}
+                        value={arrDesc}
+                        onChange={(e) => setArrDesc(e.target.value)}
+                        placeholder="Mô tả công dụng sản phẩm..."
+                        className="w-full px-3 py-1.5 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                      />
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddArrival(false)}
+                        className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl"
+                      >
+                        Hủy
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-4 py-1.5 bg-[#2d4a3e] hover:bg-[#1f352c] text-white text-xs font-bold rounded-xl shadow-xs"
+                      >
+                        {editingArrival ? 'Cập Nhật' : 'Lưu Sản Phẩm'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {/* List of New Arrival items */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {(newArrivals || []).map((item) => (
+                    <div key={item.id} className="bg-white rounded-2xl border border-[#ebe3d9] overflow-hidden shadow-xs p-3.5 flex flex-col justify-between space-y-3">
+                      <div className="flex gap-3">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-16 h-16 rounded-xl object-cover border border-[#ebe3d9] shrink-0"
+                        />
+                        <div className="min-w-0 flex-1 space-y-0.5">
+                          <span className="px-2 py-0.5 bg-[#f7f1eb] text-[#2d4a3e] text-[10px] font-extrabold rounded-md uppercase">
+                            {item.discountTag || 'NEW'}
+                          </span>
+                          <h4 className="font-serif font-bold text-xs text-[#3a2f2a] truncate">{item.title}</h4>
+                          <p className="text-[11px] text-[#6b5c54] truncate">{item.subtitle}</p>
+                          <div className="text-xs font-bold text-[#2d4a3e]">
+                            {item.price.toLocaleString('vi-VN')}đ
+                            {item.originalPrice && (
+                              <span className="text-[10px] text-gray-400 line-through ml-1.5">
+                                {item.originalPrice.toLocaleString('vi-VN')}đ
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-[#f7f1eb] flex items-center justify-between">
+                        <div className="text-[10px] text-amber-500 font-bold flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-current" />
+                          <span>{item.rating || 5.0} ({item.reviewCount || 0})</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => openEditArrival(item)}
+                            className="p-1.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg transition-colors cursor-pointer"
+                            title="Sửa"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => deleteNewArrival(item.id)}
+                            className="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg transition-colors cursor-pointer"
+                            title="Xóa"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6.8: INSTAGRAM GALLERY MANAGEMENT */}
+          {activeTab === 'insta' && (
+            <div className="space-y-4">
+              <div className="bg-white p-5 rounded-3xl border border-[#ebe3d9] space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-serif font-bold text-lg text-[#3a2f2a] flex items-center gap-2">
+                      <Instagram className="w-5 h-5 text-[#c9a86c]" />
+                      <span>Quản Lý Thư Viện Ảnh Instagram</span>
+                    </h3>
+                    <p className="text-xs text-[#6b5c54] mt-0.5">
+                      Thêm hoặc xóa các bức ảnh hiển thị trong mục "Theo Dõi Trên Instagram" ở trang chủ.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setInstaUrl('');
+                      setShowAddInsta(true);
+                    }}
+                    className="px-4 py-2 bg-[#2d4a3e] hover:bg-[#1f352c] text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <PlusCircle className="w-4 h-4" />
+                    <span>Thêm Ảnh Instagram Mới</span>
+                  </button>
+                </div>
+
+                {/* Add Insta Photo Form */}
+                {showAddInsta && (
+                  <form onSubmit={handleAddInstaPhotoSubmit} className="p-4 bg-[#fbf9f5] rounded-2xl border border-[#c9a86c]/30 space-y-3 animate-in fade-in">
+                    <div className="flex justify-between items-center border-b border-[#ebe3d9] pb-2">
+                      <h4 className="font-serif font-bold text-sm text-[#3a2f2a]">Thêm Ảnh Mới Vào Thư Viện Instagram</h4>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddInsta(false)}
+                        className="text-xs text-gray-400 hover:text-gray-600"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Đường dẫn ảnh (Image URL) *</label>
+                      <input
+                        type="url"
+                        required
+                        value={instaUrl}
+                        onChange={(e) => setInstaUrl(e.target.value)}
+                        placeholder="https://images.unsplash.com/photo-..."
+                        className="w-full px-3 py-2 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                      />
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddInsta(false)}
+                        className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl"
+                      >
+                        Hủy
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-4 py-1.5 bg-[#2d4a3e] hover:bg-[#1f352c] text-white text-xs font-bold rounded-xl shadow-xs"
+                      >
+                        Lưu Ảnh
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {/* Instagram Photos Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+                  {(instaPhotos || []).map((photo) => (
+                    <div key={photo.id} className="relative aspect-square rounded-2xl overflow-hidden border border-[#ebe3d9] group shadow-xs">
+                      <img
+                        src={photo.url}
+                        alt="Insta"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <button
+                          onClick={() => deleteInstaPhoto(photo.id)}
+                          className="p-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl shadow-md cursor-pointer transition-transform hover:scale-110"
+                          title="Xóa ảnh khỏi Instagram Gallery"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

@@ -3,6 +3,96 @@ import { User, UserRole, Appointment, RedeemedVoucher, PointTransaction, Product
 import { SERVICES_DATA } from '../data/servicesData';
 import { RewardPackage } from '../data/rewardsData';
 
+export interface InstaPhotoItem {
+  id: string;
+  url: string;
+  caption?: string;
+}
+
+export type NewArrivalItem = ServiceItem & {
+  discountTag?: string;
+  rating?: number;
+  reviewCount?: number;
+};
+
+export const INITIAL_NEW_ARRIVALS: NewArrivalItem[] = [
+  {
+    id: 'aquafresh-wellness',
+    category: 'facial',
+    title: 'Aquafresh Wellness Serum',
+    subtitle: 'Tinh chất cấp nước khóa ẩm 72h',
+    price: 350000,
+    originalPrice: 700000,
+    duration: 0,
+    itemType: 'product',
+    icon: '💧',
+    description: 'Cấp ẩm tức thì cho da khô mệt mỏi, tái tạo lớp màng lipid bảo vệ da.',
+    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&q=80',
+    discountTag: '50% Off',
+    rating: 4.9,
+    reviewCount: 64,
+  },
+  {
+    id: 'velvet-rose',
+    category: 'facial',
+    title: 'Velvet Rose Elixir',
+    subtitle: 'Dầu dưỡng hoa hồng nhung trắng da',
+    price: 450000,
+    originalPrice: 900000,
+    duration: 0,
+    itemType: 'product',
+    icon: '🌹',
+    description: 'Chống oxy hóa mạnh mẽ, xua tan sắc tố sẫm màu mang lại làn da trắng hồng.',
+    image: 'https://th.bing.com/th/id/OIP.Dau8hngwWSNnUeB5t6Z-lwHaJ2?r=0&o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3',
+    discountTag: '50% Off',
+    rating: 5.0,
+    reviewCount: 89,
+  },
+  {
+    id: 'herbal-haven',
+    category: 'spa',
+    title: 'Herbal Haven Body Oil',
+    subtitle: 'Dầu thảo dược trị liệu nhức mỏi',
+    price: 280000,
+    originalPrice: 560000,
+    duration: 0,
+    itemType: 'product',
+    icon: '🌿',
+    description: 'Ấn huyệt trị liệu xua tan mệt mỏi cơ khớp, lưu thông khí huyết tốt.',
+    image: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=500&q=80',
+    discountTag: '50% Off',
+    rating: 4.8,
+    reviewCount: 42,
+  },
+  {
+    id: 'marine-collagen-mask',
+    category: 'facial',
+    title: 'Marine Collagen Hydrogel Mask',
+    subtitle: 'Mặt nạ Collagen biển phục hồi màng da',
+    price: 320000,
+    originalPrice: 640000,
+    duration: 0,
+    itemType: 'product',
+    icon: '🌊',
+    description: 'Giàu vi khoáng biển khôi phục độ đàn hồi và tươi trẻ tự nhiên.',
+    image: 'https://tse3.mm.bing.net/th/id/OIP.h6Iow8BSh99AthTNIwMkVgHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
+    discountTag: '50% Off',
+    rating: 4.85,
+    reviewCount: 93,
+  },
+];
+
+export const INITIAL_INSTA_PHOTOS: InstaPhotoItem[] = [
+  { id: '1', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80' },
+  { id: '2', url: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80' },
+  { id: '3', url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80' },
+  { id: '4', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=400&q=80' },
+  { id: '5', url: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&q=80' },
+  { id: '6', url: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80' },
+  { id: '7', url: 'https://i.pinimg.com/originals/53/bf/fc/53bffc774772840dc0992d589e3e6e60.jpg' },
+  { id: '8', url: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=400&q=80' },
+];
+
 export const INITIAL_REVIEWS: Review[] = [
   {
     id: 'rev_1',
@@ -284,12 +374,19 @@ interface AuthContextType {
   productOrders: ProductOrder[];
   productsCatalog: ServiceItem[];
   reviews: Review[];
+  newArrivals: NewArrivalItem[];
+  instaPhotos: InstaPhotoItem[];
   addAppointment: (appointment: Appointment) => void;
   addProductOrder: (order: ProductOrder) => void;
   addProduct: (product: ServiceItem) => void;
   updateProductStock: (productId: string, newStock: number) => void;
   updateProduct: (product: ServiceItem) => void;
   deleteProduct: (productId: string) => void;
+  addNewArrival: (item: NewArrivalItem) => void;
+  updateNewArrival: (item: NewArrivalItem) => void;
+  deleteNewArrival: (itemId: string) => void;
+  addInstaPhoto: (photo: InstaPhotoItem) => void;
+  deleteInstaPhoto: (photoId: string) => void;
   addReview: (review: Omit<Review, 'id' | 'date'> & { id?: string; date?: string }) => void;
   deleteReview: (reviewId: string) => void;
   updateReviewStatus: (reviewId: string, status: 'approved' | 'pending' | 'hidden') => void;
@@ -360,6 +457,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return INITIAL_REVIEWS;
   });
 
+  const [newArrivals, setNewArrivals] = useState<NewArrivalItem[]>(() => {
+    const saved = localStorage.getItem('lume_new_arrivals');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { return INITIAL_NEW_ARRIVALS; }
+    }
+    return INITIAL_NEW_ARRIVALS;
+  });
+
+  const [instaPhotos, setInstaPhotos] = useState<InstaPhotoItem[]>(() => {
+    const saved = localStorage.getItem('lume_insta_photos');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) { return INITIAL_INSTA_PHOTOS; }
+    }
+    return INITIAL_INSTA_PHOTOS;
+  });
+
   // Fetch live database tables on mount
   useEffect(() => {
     fetch('/api/database')
@@ -371,6 +484,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (data.db.productOrders && Array.isArray(data.db.productOrders)) setProductOrders(data.db.productOrders);
           if (data.db.productsCatalog && Array.isArray(data.db.productsCatalog)) setProductsCatalog(data.db.productsCatalog);
           if (data.db.reviews && Array.isArray(data.db.reviews)) setReviews(data.db.reviews);
+          if (data.db.newArrivals && Array.isArray(data.db.newArrivals) && data.db.newArrivals.length > 0) setNewArrivals(data.db.newArrivals);
+          if (data.db.instaPhotos && Array.isArray(data.db.instaPhotos) && data.db.instaPhotos.length > 0) setInstaPhotos(data.db.instaPhotos);
         }
       })
       .catch(err => console.warn('[DB INITIAL FETCH WARN]', err));
@@ -429,6 +544,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     localStorage.setItem('lume_reviews', JSON.stringify(reviews));
   }, [reviews]);
+
+  useEffect(() => {
+    localStorage.setItem('lume_new_arrivals', JSON.stringify(newArrivals));
+  }, [newArrivals]);
+
+  useEffect(() => {
+    localStorage.setItem('lume_insta_photos', JSON.stringify(instaPhotos));
+  }, [instaPhotos]);
+
+  const addNewArrival = (item: NewArrivalItem) => {
+    setNewArrivals(prev => [item, ...prev]);
+    fetch('/api/new-arrivals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ item }),
+    }).catch(err => console.error('[DB ADD NEW ARRIVAL ERROR]', err));
+  };
+
+  const updateNewArrival = (item: NewArrivalItem) => {
+    setNewArrivals(prev => prev.map(a => a.id === item.id ? item : a));
+    fetch(`/api/new-arrivals/${item.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(item),
+    }).catch(err => console.error('[DB UPDATE NEW ARRIVAL ERROR]', err));
+  };
+
+  const deleteNewArrival = (itemId: string) => {
+    setNewArrivals(prev => prev.filter(a => a.id !== itemId));
+    fetch(`/api/new-arrivals/${itemId}`, {
+      method: 'DELETE',
+    }).catch(err => console.error('[DB DELETE NEW ARRIVAL ERROR]', err));
+  };
+
+  const addInstaPhoto = (photo: InstaPhotoItem) => {
+    setInstaPhotos(prev => [photo, ...prev]);
+    fetch('/api/insta-photos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ photo }),
+    }).catch(err => console.error('[DB ADD INSTA PHOTO ERROR]', err));
+  };
+
+  const deleteInstaPhoto = (photoId: string) => {
+    setInstaPhotos(prev => prev.filter(p => p.id !== photoId));
+    fetch(`/api/insta-photos/${photoId}`, {
+      method: 'DELETE',
+    }).catch(err => console.error('[DB DELETE INSTA PHOTO ERROR]', err));
+  };
 
   const addReview = (reviewPayload: Omit<Review, 'id' | 'date'> & { id?: string; date?: string }) => {
     const newRev: Review = {
@@ -989,12 +1153,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         productOrders,
         productsCatalog,
         reviews,
+        newArrivals,
+        instaPhotos,
         addAppointment,
         addProductOrder,
         addProduct,
         updateProductStock,
         updateProduct,
         deleteProduct,
+        addNewArrival,
+        updateNewArrival,
+        deleteNewArrival,
+        addInstaPhoto,
+        deleteInstaPhoto,
         addReview,
         deleteReview,
         updateReviewStatus,

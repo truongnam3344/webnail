@@ -477,7 +477,9 @@ const INITIAL_DB_DATA = {
       verified: true,
       status: "approved"
     }
-  ]
+  ],
+  newArrivals: [],
+  instaPhotos: []
 };
 
 async function readDatabase() {
@@ -502,6 +504,8 @@ async function readDatabase() {
       appointments: parsed.appointments || INITIAL_DB_DATA.appointments,
       productOrders: parsed.productOrders || INITIAL_DB_DATA.productOrders,
       reviews: parsed.reviews || INITIAL_DB_DATA.reviews,
+      newArrivals: parsed.newArrivals || [],
+      instaPhotos: parsed.instaPhotos || [],
     };
   } catch (err) {
     console.error('[DB READ ERROR - Restoring initial data]', err);
@@ -741,6 +745,100 @@ async function startServer() {
       const { id } = req.params;
       const db = await readDatabase();
       db.reviews = (db.reviews || []).filter((r: any) => r.id !== id);
+      await writeDatabase(db);
+      res.json({ success: true, deletedId: id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // NEW ARRIVALS API ENDPOINTS
+  app.get('/api/new-arrivals', async (req, res) => {
+    try {
+      const db = await readDatabase();
+      res.json({ success: true, newArrivals: db.newArrivals || [] });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/new-arrivals', async (req, res) => {
+    try {
+      const { item } = req.body;
+      if (!item) return res.status(400).json({ error: 'Missing item payload' });
+
+      const db = await readDatabase();
+      db.newArrivals = [item, ...(db.newArrivals || []).filter((a: any) => a.id !== item.id)];
+      await writeDatabase(db);
+      res.json({ success: true, item });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.put('/api/new-arrivals/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const db = await readDatabase();
+
+      let updatedItem = null;
+      db.newArrivals = (db.newArrivals || []).map((a: any) => {
+        if (a.id === id) {
+          updatedItem = { ...a, ...updates };
+          return updatedItem;
+        }
+        return a;
+      });
+
+      await writeDatabase(db);
+      res.json({ success: true, item: updatedItem });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/new-arrivals/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const db = await readDatabase();
+      db.newArrivals = (db.newArrivals || []).filter((a: any) => a.id !== id);
+      await writeDatabase(db);
+      res.json({ success: true, deletedId: id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // INSTAGRAM PHOTOS API ENDPOINTS
+  app.get('/api/insta-photos', async (req, res) => {
+    try {
+      const db = await readDatabase();
+      res.json({ success: true, instaPhotos: db.instaPhotos || [] });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/insta-photos', async (req, res) => {
+    try {
+      const { photo } = req.body;
+      if (!photo) return res.status(400).json({ error: 'Missing photo payload' });
+
+      const db = await readDatabase();
+      db.instaPhotos = [photo, ...(db.instaPhotos || []).filter((p: any) => p.id !== photo.id)];
+      await writeDatabase(db);
+      res.json({ success: true, photo });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/insta-photos/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const db = await readDatabase();
+      db.instaPhotos = (db.instaPhotos || []).filter((p: any) => p.id !== id);
       await writeDatabase(db);
       res.json({ success: true, deletedId: id });
     } catch (err: any) {

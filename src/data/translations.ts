@@ -83,12 +83,16 @@ export const translations: Record<Language, Record<string, string>> = {
     // New Arrivals
     'new.sub': 'Bộ Sưu Tập Mới',
     'new.title': 'Sản Phẩm Mới Ra Mắt',
+    'newarrivals.sub': 'Bộ Sưu Tập Mới',
+    'newarrivals.title': 'Sản Phẩm Mới Ra Mắt',
     'new.poster.tag': 'Giảm 50%',
     'new.poster.title': 'Sản Phẩm Làm Đẹp Mùa Mới',
 
     // Testimonials
     'testi.sub': 'Cảm Nhận',
     'testi.title': 'Đánh Giá Từ Khách Hàng Thân Thiết',
+    'testimonials.sub': 'Ý Kiến & Cảm Nhận Thực Tế',
+    'testimonials.title': 'Khách Hàng Nói Gì Về Lumé Spa',
 
     // News & Blogs
     'blog.sub': 'Tin Tức & Mẹo Làm Đẹp',
@@ -116,11 +120,24 @@ export const translations: Record<Language, Record<string, string>> = {
     'feat.support.desc': 'Tư vấn nhiệt tình tận tâm',
     'feat.quality': 'Chất Lượng Đảm Bảo',
     'feat.quality.desc': '100% Mỹ phẩm hữu cơ chính hãng',
+    'features.shipping': 'Miễn Phí Vận Chuyển',
+    'features.shipping.sub': 'Cho đơn hàng từ 500k',
+    'features.payment': 'Thanh Toán Linh Hoạt',
+    'features.payment.sub': 'Đa dạng thẻ & Chuyển khoản',
+    'features.support': 'Hỗ Trợ 24/7',
+    'features.support.sub': 'Tư vấn nhiệt tình tận tâm',
+    'features.quality': 'Chất Lượng Đảm Bảo',
+    'features.quality.sub': '100% Mỹ phẩm hữu cơ chính hãng',
     'news.tag': 'Bản Tin Ưu Đãi',
     'news.title': 'Đăng Ký Nhận Ưu Đãi Mới Nhất',
     'news.placeholder': 'Nhập email của bạn...',
     'news.btn': 'Đăng Ký',
     'news.thanks': 'Cảm ơn bạn đã đăng ký nhận bản tin khuyến mãi!',
+    'newsletter.tag': 'Bản Tin Ưu Đãi',
+    'newsletter.title': 'Đăng Ký Nhận Ưu Đãi Mới Nhất',
+    'newsletter.placeholder': 'Nhập email của bạn...',
+    'newsletter.subscribe': 'Đăng Ký',
+    'newsletter.subscribed': 'Cảm ơn bạn đã đăng ký nhận bản tin khuyến mãi!',
   },
   en: {
     // Header
@@ -435,7 +452,6 @@ export const translations: Record<Language, Record<string, string>> = {
     'feat.quality': '品質保証',
     'feat.quality.desc': '100%正規品オーガニック',
     'news.tag': 'メルマガ登録',
-     me:'最新のお得情報をGET',
     'news.title': 'メールマガジンにご登録いただくと最新クーポンをお届けします',
     'news.placeholder': 'メールアドレスを入力...',
     'news.btn': '登録する',

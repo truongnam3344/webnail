@@ -2,6 +2,7 @@ import React from 'react';
 import { Star, ShoppingBag, ArrowRight } from 'lucide-react';
 import { ServiceItem } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 interface NewArrivalsProps {
   onSelectService: (service: ServiceItem) => void;
@@ -36,7 +37,7 @@ const NEW_ARRIVALS: (ServiceItem & { discountTag: string; rating: number; review
     itemType: 'product',
     icon: '🌹',
     description: 'Chống oxy hóa mạnh mẽ, xua tan sắc tố sẫm màu mang lại làn da trắng hồng.',
-    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxUx0I7kMptnVIGEp2UzQE0LKp7M9m9zx53w&s',
+    image: 'https://th.bing.com/th/id/OIP.Dau8hngwWSNnUeB5t6Z-lwHaJ2?r=0&o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3',
     discountTag: '50% Off',
     rating: 5.0,
     reviewCount: 89,
@@ -100,7 +101,7 @@ const NEW_ARRIVALS: (ServiceItem & { discountTag: string; rating: number; review
     itemType: 'product',
     icon: '🌊',
     description: 'Giàu vi khoáng biển khôi phục độ đàn hồi và tươi trẻ tự nhiên.',
-    image: 'https://images.unsplash.com/photo-1512290900673-700234215236?w=500&q=80',
+    image: 'https://tse3.mm.bing.net/th/id/OIP.h6Iow8BSh99AthTNIwMkVgHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
     discountTag: '50% Off',
     rating: 4.85,
     reviewCount: 93,
@@ -112,6 +113,9 @@ export const NewArrivalsSection: React.FC<NewArrivalsProps> = ({
   onBookService,
 }) => {
   const { t } = useLanguage();
+  const { newArrivals } = useAuth();
+
+  const itemsToDisplay = newArrivals && newArrivals.length > 0 ? newArrivals : NEW_ARRIVALS;
 
   return (
     <section className="bg-[#f7f4ee] py-16 border-t border-[#e6dec8]/60">
@@ -157,7 +161,7 @@ export const NewArrivalsSection: React.FC<NewArrivalsProps> = ({
                 Nâng tầm vẻ đẹp tự nhiên với dòng sản phẩm hữu cơ mới ra mắt năm 2026.
               </p>
               <button
-                onClick={() => onBookService(NEW_ARRIVALS[0])}
+                onClick={() => itemsToDisplay[0] && onBookService(itemsToDisplay[0])}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#e6d3ad] hover:bg-white text-[#1b3b2b] text-xs font-extrabold rounded-full transition-all shadow-md cursor-pointer"
               >
                 <span>Shop Now</span>
@@ -168,7 +172,7 @@ export const NewArrivalsSection: React.FC<NewArrivalsProps> = ({
 
           {/* Right 6 Products Grid */}
           <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {NEW_ARRIVALS.map((product) => (
+            {itemsToDisplay.map((product) => (
               <div
                 key={product.id}
                 onClick={() => onSelectService(product)}

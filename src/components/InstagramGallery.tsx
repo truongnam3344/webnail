@@ -1,20 +1,13 @@
 import React from 'react';
 import { Instagram } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-
-const INSTA_PHOTOS = [
-  { id: '1', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80' },
-  { id: '2', url: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80' },
-  { id: '3', url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80' },
-  { id: '4', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=400&q=80' },
-  { id: '5', url: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&q=80' },
-  { id: '6', url: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80' },
-  { id: '7', url: 'https://images.unsplash.com/photo-1608248597263-000799965813?w=400&q=80' },
-  { id: '8', url: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=400&q=80' },
-];
+import { useAuth, INITIAL_INSTA_PHOTOS } from '../context/AuthContext';
 
 export const InstagramGallery: React.FC = () => {
   const { t } = useLanguage();
+  const { instaPhotos } = useAuth();
+
+  const photosToDisplay = instaPhotos && instaPhotos.length > 0 ? instaPhotos : INITIAL_INSTA_PHOTOS;
 
   return (
     <section className="bg-[#f7f4ee] py-12 border-t border-[#e6dec8]/60">
@@ -31,7 +24,7 @@ export const InstagramGallery: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-          {INSTA_PHOTOS.map((item) => (
+          {photosToDisplay.map((item) => (
             <a
               key={item.id}
               href="https://instagram.com"
