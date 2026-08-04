@@ -479,7 +479,8 @@ const INITIAL_DB_DATA = {
     }
   ],
   newArrivals: [],
-  instaPhotos: []
+  instaPhotos: [],
+  servicesCatalog: []
 };
 
 async function readDatabase() {
@@ -687,6 +688,64 @@ async function startServer() {
       const { id } = req.params;
       const db = await readDatabase();
       db.productsCatalog = db.productsCatalog.filter((p: any) => p.id !== id);
+      await writeDatabase(db);
+      res.json({ success: true, deletedId: id });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // SERVICES API ENDPOINTS
+  app.get('/api/services', async (req, res) => {
+    try {
+      const db = await readDatabase();
+      res.json({ success: true, services: db.services || [] });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/services', async (req, res) => {
+    try {
+      const { service } = req.body;
+      if (!service) return res.status(400).json({ error: 'Missing service payload' });
+
+      const db = await readDatabase();
+      db.services = [service, ...(db.services || []).filter((s: any) => s.id !== service.id)];
+      await writeDatabase(db);
+      res.json({ success: true, service });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.put('/api/services/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const db = await readDatabase();
+
+      let updatedService = null;
+      db.services = (db.services || []).map((s: any) => {
+        if (s.id === id) {
+          updatedService = { ...s, ...updates };
+          return updatedService;
+        }
+        return s;
+      });
+
+      await writeDatabase(db);
+      res.json({ success: true, service: updatedService });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/services/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const db = await readDatabase();
+      db.services = (db.services || []).filter((s: any) => s.id !== id);
       await writeDatabase(db);
       res.json({ success: true, deletedId: id });
     } catch (err: any) {
