@@ -373,6 +373,7 @@ interface AuthContextType {
   appointments: Appointment[];
   productOrders: ProductOrder[];
   productsCatalog: ServiceItem[];
+  servicesCatalog: ServiceItem[];
   reviews: Review[];
   newArrivals: NewArrivalItem[];
   instaPhotos: InstaPhotoItem[];
@@ -382,6 +383,9 @@ interface AuthContextType {
   updateProductStock: (productId: string, newStock: number) => void;
   updateProduct: (product: ServiceItem) => void;
   deleteProduct: (productId: string) => void;
+  addService: (service: ServiceItem) => void;
+  updateService: (service: ServiceItem) => void;
+  deleteService: (serviceId: string) => void;
   addNewArrival: (item: NewArrivalItem) => void;
   updateNewArrival: (item: NewArrivalItem) => void;
   deleteNewArrival: (itemId: string) => void;
@@ -445,6 +449,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return INITIAL_PRODUCTS_CATALOG;
   });
 
+  const [servicesCatalog, setServicesCatalog] = useState<ServiceItem[]>(() => {
+    const saved = localStorage.getItem('lume_services_catalog');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return SERVICES_DATA.filter(s => s.itemType !== 'product' && s.duration > 0);
+      }
+    }
+    return SERVICES_DATA.filter(s => s.itemType !== 'product' && s.duration > 0);
+  });
+
   const [reviews, setReviews] = useState<Review[]>(() => {
     const saved = localStorage.getItem('lume_reviews');
     if (saved) {
@@ -483,6 +499,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (data.db.appointments && Array.isArray(data.db.appointments)) setAppointments(data.db.appointments);
           if (data.db.productOrders && Array.isArray(data.db.productOrders)) setProductOrders(data.db.productOrders);
           if (data.db.productsCatalog && Array.isArray(data.db.productsCatalog)) setProductsCatalog(data.db.productsCatalog);
+          const servs = data.db.services || data.db.servicesCatalog;
+          if (servs && Array.isArray(servs) && servs.length > 0) setServicesCatalog(servs);
           if (data.db.reviews && Array.isArray(data.db.reviews)) setReviews(data.db.reviews);
           if (data.db.newArrivals && Array.isArray(data.db.newArrivals) && data.db.newArrivals.length > 0) setNewArrivals(data.db.newArrivals);
           if (data.db.instaPhotos && Array.isArray(data.db.instaPhotos) && data.db.instaPhotos.length > 0) setInstaPhotos(data.db.instaPhotos);
@@ -540,6 +558,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     localStorage.setItem('lume_products_catalog', JSON.stringify(productsCatalog));
   }, [productsCatalog]);
+
+  useEffect(() => {
+    localStorage.setItem('lume_services_catalog', JSON.stringify(servicesCatalog));
+  }, [servicesCatalog]);
 
   useEffect(() => {
     localStorage.setItem('lume_reviews', JSON.stringify(reviews));
@@ -895,6 +917,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }).catch(err => console.error('[DB DELETE PROD ERROR]', err));
   };
 
+  const addService = (service: ServiceItem) => {
+    setServicesCatalog(prev => [service, ...prev]);
+    fetch('/api/services', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ service }),
+    }).catch(err => console.error('[DB ADD SERVICE ERROR]', err));
+  };
+
+  const updateService = (updatedService: ServiceItem) => {
+    setServicesCatalog(prev =>
+      prev.map(s => (s.id === updatedService.id ? updatedService : s))
+    );
+    fetch(`/api/services/${updatedService.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedService),
+    }).catch(err => console.error('[DB UPDATE SERVICE ERROR]', err));
+  };
+
+  const deleteService = (serviceId: string) => {
+    setServicesCatalog(prev => prev.filter(s => s.id !== serviceId));
+    fetch(`/api/services/${serviceId}`, {
+      method: 'DELETE',
+    }).catch(err => console.error('[DB DELETE SERVICE ERROR]', err));
+  };
+
   const updateAppointmentStatus = (
     id: string,
     status: OrderStatus,
@@ -1152,6 +1201,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         appointments,
         productOrders,
         productsCatalog,
+        servicesCatalog,
         reviews,
         newArrivals,
         instaPhotos,
@@ -1161,6 +1211,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         updateProductStock,
         updateProduct,
         deleteProduct,
+        addService,
+        updateService,
+        deleteService,
         addNewArrival,
         updateNewArrival,
         deleteNewArrival,
