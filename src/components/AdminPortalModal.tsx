@@ -25,13 +25,18 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     appointments,
     productOrders,
     productsCatalog,
+    servicesCatalog,
     updateAppointmentStatus,
     updateProductOrderStatus,
     issueInvoice,
     assignSpecialist,
     addProduct,
     updateProductStock,
+    updateProduct,
     deleteProduct,
+    addService,
+    updateService,
+    deleteService,
     reviews,
     deleteReview,
     updateReviewStatus,
@@ -76,126 +81,280 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  // Email Ticket Modal state
-  const [selectedEmailApp, setSelectedEmailApp] = useState<Appointment | null>(null);
-  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  // Derived values for analytics, revenue and filtering
+  const servicesList = servicesCatalog || [];
 
-  // Services management local state (Only Spa / Facial / Nail / Hair services)
-  const [servicesList, setServicesList] = useState<ServiceItem[]>(
-    INITIAL_SERVICES.filter(item => item.itemType !== 'product' && item.duration > 0)
-  );
-  const [showAddService, setShowAddService] = useState(false);
-  const [newServiceTitle, setNewServiceTitle] = useState('');
-  const [newServicePrice, setNewServicePrice] = useState('');
-  const [newServiceCategory, setNewServiceCategory] = useState<'spa' | 'facial' | 'nail' | 'hair'>('spa');
-  const [newServiceDuration, setNewServiceDuration] = useState('60');
-  const [newServiceIcon, setNewServiceIcon] = useState('✨');
-  const [newServiceDesc, setNewServiceDesc] = useState('');
-
-  // Products management local state (Only Physical Products)
-  const [showAddProduct, setShowAddProduct] = useState(false);
-  const [newProdTitle, setNewProdTitle] = useState('');
-  const [newProdSubtitle, setNewProdSubtitle] = useState('');
-  const [newProdPrice, setNewProdPrice] = useState('');
-  const [newProdStock, setNewProdStock] = useState('50');
-  const [newProdImage, setNewProdImage] = useState('https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80');
-  const [newProdCategory, setNewProdCategory] = useState<'facial' | 'hair' | 'spa' | 'nail'>('facial');
-  const [newProdIcon, setNewProdIcon] = useState('🧴');
-  const [newProdDesc, setNewProdDesc] = useState('');
-
-  // Staff management local state
-  const [specialistsList, setSpecialistsList] = useState<Specialist[]>(INITIAL_SPECIALISTS);
-
-  if (!isOpen || !currentUser) return null;
-
-  // Key KPI Calculations
-  const completedApps = appointments.filter(a => a.status === 'completed');
-  const serviceRevenue = completedApps.reduce((sum, a) => sum + a.finalPrice, 0);
-
-  const completedOrders = productOrders.filter(o => o.status === 'completed' || o.paymentStatus === 'paid');
-  const productRevenue = completedOrders.reduce((sum, o) => sum + o.finalPrice, 0);
-
+  const serviceRevenue = appointments.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0);
+  const productRevenue = productOrders.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0);
   const totalRevenue = serviceRevenue + productRevenue;
 
-  // Filtered appointments for Bookings tab
-  const filteredAppointments = appointments.filter(app => {
+  const filteredAppointments = appointments.filter((app) => {
     const matchesSearch =
-      app.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       app.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.customerPhone.includes(searchQuery);
-    
+      app.customerPhone.includes(searchQuery) ||
+      app.serviceTitle.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  // Filtered product orders
-  const filteredProductOrders = productOrders.filter(ord => {
+  const filteredProductOrders = productOrders.filter((ord) => {
     const matchesSearch =
-      ord.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ord.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ord.customerPhone.includes(searchQuery);
-
+      ord.customerPhone.includes(searchQuery) ||
+      ord.items.some(i => i.title.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesStatus = statusFilter === 'all' || ord.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  // Submit Handler for Add Spa Service
-  const handleAddServiceSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newServiceTitle || !newServicePrice) return;
+  // Email Ticket Modal state
+  const [selectedEmailApp, setSelectedEmailApp] = useState<Appointment | null>(null);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
-    const newService: ServiceItem = {
-      id: `srv_${Date.now()}`,
+  // Services management state (Only Spa / Facial / Nail / Hair services)
+  const servicesListToUse = (servicesCatalog && servicesCatalog.length > 0) ? servicesCatalog : INITIAL_SERVICES.filter(item => item.itemType !== 'product' && item.duration > 0);
+  const [showAddService, setShowAddService] = useState(false);
+  const [editingService, setEditingService] = useState<ServiceItem | null>(null);
+  const [servTitle, setServTitle] = useState('');
+  const [servPrice, setServPrice] = useState('');
+  const [servOriginalPrice, setServOriginalPrice] = useState('');
+  const [servSalePercent, setServSalePercent] = useState('');
+  const [servCategory, setServCategory] = useState<'spa' | 'facial' | 'nail' | 'hair'>('spa');
+  const [servDuration, setServDuration] = useState('60');
+  const [servIcon, setServIcon] = useState('✨');
+  const [servDesc, setServDesc] = useState('');
+
+  // Products management state (Only Physical Products)
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<ServiceItem | null>(null);
+  const [prodTitle, setProdTitle] = useState('');
+  const [prodSubtitle, setProdSubtitle] = useState('');
+  const [prodPrice, setProdPrice] = useState('');
+  const [prodOriginalPrice, setProdOriginalPrice] = useState('');
+  const [prodSalePercent, setProdSalePercent] = useState('');
+  const [prodStock, setProdStock] = useState('50');
+  const [prodImage, setProdImage] = useState('https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80');
+  const [prodCategory, setProdCategory] = useState<'facial' | 'hair' | 'spa' | 'nail'>('facial');
+  const [prodIcon, setProdIcon] = useState('🧴');
+  const [prodDesc, setProdDesc] = useState('');
+
+  // Staff management local state
+  const [specialistsList, setSpecialistsList] = useState<Specialist[]>(INITIAL_SPECIALISTS);
+
+  // Auto calculation helpers for Service price & sale %
+  const handleServOriginalPriceChange = (origVal: string) => {
+    setServOriginalPrice(origVal);
+    if (servSalePercent && origVal) {
+      const orig = parseInt(origVal, 10);
+      const pct = parseFloat(servSalePercent);
+      if (!isNaN(orig) && !isNaN(pct) && pct >= 0 && pct <= 100) {
+        setServPrice(Math.round(orig * (1 - pct / 100)).toString());
+      }
+    } else if (servPrice && origVal) {
+      const orig = parseInt(origVal, 10);
+      const price = parseInt(servPrice, 10);
+      if (!isNaN(orig) && !isNaN(price) && orig > price) {
+        setServSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+      }
+    }
+  };
+
+  const handleServSalePercentChange = (pctVal: string) => {
+    setServSalePercent(pctVal);
+    if (servOriginalPrice && pctVal !== '') {
+      const orig = parseInt(servOriginalPrice, 10);
+      const pct = parseFloat(pctVal);
+      if (!isNaN(orig) && !isNaN(pct) && pct >= 0 && pct <= 100) {
+        setServPrice(Math.round(orig * (1 - pct / 100)).toString());
+      }
+    }
+  };
+
+  const handleServPriceChange = (priceVal: string) => {
+    setServPrice(priceVal);
+    if (servOriginalPrice && priceVal) {
+      const orig = parseInt(servOriginalPrice, 10);
+      const price = parseInt(priceVal, 10);
+      if (!isNaN(orig) && !isNaN(price) && orig > price) {
+        setServSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+      }
+    }
+  };
+
+  const openAddService = () => {
+    setEditingService(null);
+    setServTitle('');
+    setServPrice('');
+    setServOriginalPrice('');
+    setServSalePercent('');
+    setServDuration('60');
+    setServIcon('✨');
+    setServDesc('');
+    setServCategory('spa');
+    setShowAddService(true);
+  };
+
+  const openEditService = (service: ServiceItem) => {
+    setEditingService(service);
+    setServTitle(service.title);
+    setServPrice(service.price.toString());
+    setServOriginalPrice(service.originalPrice ? service.originalPrice.toString() : '');
+    if (service.originalPrice && service.originalPrice > service.price) {
+      const pct = Math.round(((service.originalPrice - service.price) / service.originalPrice) * 100);
+      setServSalePercent(pct.toString());
+    } else {
+      setServSalePercent('');
+    }
+    setServDuration(service.duration.toString());
+    setServIcon(service.icon || '✨');
+    setServDesc(service.description || '');
+    setServCategory((service.category as any) || 'spa');
+    setShowAddService(true);
+  };
+
+  const handleSaveServiceSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!servTitle || !servPrice) return;
+
+    const priceVal = parseInt(servPrice, 10);
+    const origVal = servOriginalPrice ? parseInt(servOriginalPrice, 10) : undefined;
+
+    const itemData: ServiceItem = {
+      ...(editingService || {}),
+      id: editingService ? editingService.id : `serv_${Date.now()}`,
       itemType: 'service',
-      category: newServiceCategory,
-      title: newServiceTitle,
-      price: parseInt(newServicePrice, 10),
-      duration: parseInt(newServiceDuration, 10),
-      icon: newServiceIcon || '✨',
-      description: newServiceDesc || 'Dịch vụ spa cao cấp được khởi tạo từ Bảng Quản Trị Admin.',
-      image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80',
+      category: servCategory,
+      title: servTitle,
+      price: priceVal,
+      originalPrice: origVal,
+      duration: parseInt(servDuration, 10) || 60,
+      icon: servIcon || '✨',
+      description: servDesc || 'Dịch vụ spa cao cấp Lumé Spa.',
+      image: editingService?.image || 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80',
       popular: true,
-      protocolSteps: [
+      protocolSteps: editingService?.protocolSteps || [
         'Khai thông huyệt đạo & làm sạch dịu nhẹ',
         'Thực hiện quy trình trị liệu chuyên sâu',
         'Thư giãn với trà thảo mộc organic'
       ]
     };
 
-    setServicesList(prev => [newService, ...prev]);
-    setNewServiceTitle('');
-    setNewServicePrice('');
-    setNewServiceDesc('');
+    if (editingService) {
+      updateService(itemData);
+    } else {
+      addService(itemData);
+    }
+
+    setEditingService(null);
     setShowAddService(false);
   };
 
-  // Submit Handler for Add Product
-  const handleAddProductSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newProdTitle || !newProdPrice) return;
+  // Auto calculation helpers for Product price & sale %
+  const handleProdOriginalPriceChange = (origVal: string) => {
+    setProdOriginalPrice(origVal);
+    if (prodSalePercent && origVal) {
+      const orig = parseInt(origVal, 10);
+      const pct = parseFloat(prodSalePercent);
+      if (!isNaN(orig) && !isNaN(pct) && pct >= 0 && pct <= 100) {
+        setProdPrice(Math.round(orig * (1 - pct / 100)).toString());
+      }
+    } else if (prodPrice && origVal) {
+      const orig = parseInt(origVal, 10);
+      const price = parseInt(prodPrice, 10);
+      if (!isNaN(orig) && !isNaN(price) && orig > price) {
+        setProdSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+      }
+    }
+  };
 
-    const newProduct: ServiceItem = {
-      id: `prod_${Date.now()}`,
+  const handleProdSalePercentChange = (pctVal: string) => {
+    setProdSalePercent(pctVal);
+    if (prodOriginalPrice && pctVal !== '') {
+      const orig = parseInt(prodOriginalPrice, 10);
+      const pct = parseFloat(pctVal);
+      if (!isNaN(orig) && !isNaN(pct) && pct >= 0 && pct <= 100) {
+        setProdPrice(Math.round(orig * (1 - pct / 100)).toString());
+      }
+    }
+  };
+
+  const handleProdPriceChange = (priceVal: string) => {
+    setProdPrice(priceVal);
+    if (prodOriginalPrice && priceVal) {
+      const orig = parseInt(prodOriginalPrice, 10);
+      const price = parseInt(priceVal, 10);
+      if (!isNaN(orig) && !isNaN(price) && orig > price) {
+        setProdSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+      }
+    }
+  };
+
+  const openAddProduct = () => {
+    setEditingProduct(null);
+    setProdTitle('');
+    setProdSubtitle('');
+    setProdPrice('');
+    setProdOriginalPrice('');
+    setProdSalePercent('');
+    setProdStock('50');
+    setProdImage('https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80');
+    setProdCategory('facial');
+    setProdIcon('🧴');
+    setProdDesc('');
+    setShowAddProduct(true);
+  };
+
+  const openEditProduct = (product: ServiceItem) => {
+    setEditingProduct(product);
+    setProdTitle(product.title);
+    setProdSubtitle(product.subtitle || '');
+    setProdPrice(product.price.toString());
+    setProdOriginalPrice(product.originalPrice ? product.originalPrice.toString() : '');
+    if (product.originalPrice && product.originalPrice > product.price) {
+      const pct = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+      setProdSalePercent(pct.toString());
+    } else {
+      setProdSalePercent('');
+    }
+    setProdStock((product.stockQuantity ?? 50).toString());
+    setProdImage(product.image || 'https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80');
+    setProdCategory((product.category as any) || 'facial');
+    setProdIcon(product.icon || '🧴');
+    setProdDesc(product.description || '');
+    setShowAddProduct(true);
+  };
+
+  const handleSaveProductSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!prodTitle || !prodPrice) return;
+
+    const priceVal = parseInt(prodPrice, 10);
+    const origVal = prodOriginalPrice ? parseInt(prodOriginalPrice, 10) : undefined;
+
+    const itemData: ServiceItem = {
+      ...(editingProduct || {}),
+      id: editingProduct ? editingProduct.id : `prod_${Date.now()}`,
       itemType: 'product',
-      category: newProdCategory,
-      title: newProdTitle,
-      subtitle: newProdSubtitle || 'Mỹ phẩm cao cấp Lumé',
-      price: parseInt(newProdPrice, 10),
+      category: prodCategory,
+      title: prodTitle,
+      subtitle: prodSubtitle || 'Mỹ phẩm cao cấp Lumé',
+      price: priceVal,
+      originalPrice: origVal,
       duration: 0,
-      stockQuantity: parseInt(newProdStock, 10) || 50,
-      icon: newProdIcon || '🧴',
-      description: newProdDesc || 'Sản phẩm mỹ phẩm cao cấp phân phối chính hãng tại Lumé Spa.',
-      image: newProdImage || 'https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80',
+      stockQuantity: parseInt(prodStock, 10) || 50,
+      icon: prodIcon || '🧴',
+      description: prodDesc || 'Sản phẩm mỹ phẩm cao cấp phân phối chính hãng tại Lumé Spa.',
+      image: prodImage || 'https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80',
       popular: true,
-      benefits: ['Nguyên liệu thiên nhiên dịu nhẹ', 'Bảo vệ & nuôi dưỡng da sâu', 'An toàn chuẩn y khoa']
+      benefits: editingProduct?.benefits || ['Nguyên liệu thiên nhiên dịu nhẹ', 'Bảo vệ & nuôi dưỡng da sâu', 'An toàn chuẩn y khoa']
     };
 
-    addProduct(newProduct);
-    setNewProdTitle('');
-    setNewProdSubtitle('');
-    setNewProdPrice('');
-    setNewProdStock('50');
-    setNewProdDesc('');
+    if (editingProduct) {
+      updateProduct(itemData);
+    } else {
+      addProduct(itemData);
+    }
+
+    setEditingProduct(null);
     setShowAddProduct(false);
   };
 
@@ -264,8 +423,13 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     setShowAddInsta(false);
   };
 
+  if (!isOpen || !currentUser) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200"
+    >
       <div
         className="relative w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-[#ebe3d9] h-[92vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
@@ -273,8 +437,10 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
         {/* Top Header */}
         <div className="bg-[#1f1917] text-white p-6 relative shrink-0">
           <button
+            type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-colors cursor-pointer"
+            className="absolute top-4 right-4 z-20 p-2 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-colors cursor-pointer"
+            title="Đóng Bảng Quản Trị Admin"
           >
             <X className="w-5 h-5" />
           </button>
@@ -673,11 +839,11 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
               <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-[#ebe3d9]">
                 <div>
                   <h3 className="font-serif font-bold text-base text-[#3a2f2a]">Danh Mục Dịch Vụ Lumé Spa & Massage</h3>
-                  <p className="text-xs text-[#6b5c54]">Quản lý giá, thời lượng thực hiện và mô tả các gói dịch vụ spa/nail.</p>
+                  <p className="text-xs text-[#6b5c54]">Quản lý giá bán, giá gốc chưa giảm, phần trăm giảm giá (% Sale) và thời lượng dịch vụ.</p>
                 </div>
 
                 <button
-                  onClick={() => setShowAddService(!showAddService)}
+                  onClick={openAddService}
                   className="px-4 py-2 rounded-full bg-[#c9a86c] hover:bg-[#b08d4f] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
                 >
                   <PlusCircle className="w-4 h-4" />
@@ -685,40 +851,28 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                 </button>
               </div>
 
-              {/* Form Thêm Dịch Vụ Spa Mới */}
+              {/* Form Thêm / Chỉnh Sửa Dịch Vụ Spa Mới */}
               {showAddService && (
-                <form onSubmit={handleAddServiceSubmit} className="bg-white p-5 rounded-2xl border-2 border-[#c9a86c] space-y-3 animate-in fade-in duration-150">
+                <form onSubmit={handleSaveServiceSubmit} className="bg-white p-5 rounded-2xl border-2 border-[#c9a86c] space-y-3 animate-in fade-in duration-150">
                   <div className="flex justify-between items-center pb-2 border-b border-[#f7f1eb]">
                     <h4 className="font-serif font-bold text-sm text-[#3a2f2a] flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-[#c9a86c]" />
-                      <span>Thêm Dịch Vụ Trải Nghiệm Spa Mới</span>
+                      <span>{editingService ? `Chỉnh Sửa Dịch Vụ: ${editingService.title}` : 'Thêm Dịch Vụ Trải Nghiệm Spa Mới'}</span>
                     </h4>
                     <button type="button" onClick={() => setShowAddService(false)} className="text-[#6b5c54] hover:text-[#3a2f2a]">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-2">
                       <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Tên Dịch Vụ Spa *</label>
                       <input
                         type="text"
                         required
                         placeholder="VD: Massage Body Thư Giãn Đá Nóng Alpine"
-                        value={newServiceTitle}
-                        onChange={(e) => setNewServiceTitle(e.target.value)}
-                        className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Giá Tiền (VNĐ) *</label>
-                      <input
-                        type="number"
-                        required
-                        placeholder="VD: 550000"
-                        value={newServicePrice}
-                        onChange={(e) => setNewServicePrice(e.target.value)}
+                        value={servTitle}
+                        onChange={(e) => setServTitle(e.target.value)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       />
                     </div>
@@ -726,8 +880,8 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                     <div>
                       <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Danh Mục Dịch Vụ</label>
                       <select
-                        value={newServiceCategory}
-                        onChange={(e) => setNewServiceCategory(e.target.value as any)}
+                        value={servCategory}
+                        onChange={(e) => setServCategory(e.target.value as any)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       >
                         <option value="spa">Spa & Massage Body</option>
@@ -737,13 +891,60 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                       </select>
                     </div>
 
+                    {/* GIÁ CẢ & SALE % CONTROLS */}
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">
+                        Giá Bán Thực Tế (VNĐ) *
+                      </label>
+                      <input
+                        type="number"
+                        required
+                        placeholder="VD: 550000"
+                        value={servPrice}
+                        onChange={(e) => handleServPriceChange(e.target.value)}
+                        className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9] font-extrabold text-[#c9a86c]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">
+                        Giá Niêm Yết Gốc chưa giảm (VNĐ)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="VD: 700000 (Để trống nếu không giảm giá)"
+                        value={servOriginalPrice}
+                        onChange={(e) => handleServOriginalPriceChange(e.target.value)}
+                        className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9] text-[#6b5c54]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-rose-700 mb-1 flex items-center justify-between">
+                        <span>Giảm Giá (% Sale)</span>
+                        <Tag className="w-3 h-3 text-rose-500" />
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          placeholder="VD: 20"
+                          value={servSalePercent}
+                          onChange={(e) => handleServSalePercentChange(e.target.value)}
+                          className="w-full px-3 py-2 text-xs bg-rose-50/50 rounded-xl border border-rose-200 text-rose-700 font-extrabold pr-8"
+                        />
+                        <span className="absolute right-3 top-2 text-xs font-bold text-rose-500">%</span>
+                      </div>
+                    </div>
+
                     <div>
                       <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Thời Lượng Thực Hiện (Phút)</label>
                       <input
                         type="number"
                         placeholder="VD: 60"
-                        value={newServiceDuration}
-                        onChange={(e) => setNewServiceDuration(e.target.value)}
+                        value={servDuration}
+                        onChange={(e) => setServDuration(e.target.value)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       />
                     </div>
@@ -751,8 +952,8 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                     <div>
                       <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Biểu Tượng (Emoji Icon)</label>
                       <select
-                        value={newServiceIcon}
-                        onChange={(e) => setNewServiceIcon(e.target.value)}
+                        value={servIcon}
+                        onChange={(e) => setServIcon(e.target.value)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       >
                         <option value="🪷">🪷 Hoa sen thư giãn</option>
@@ -769,8 +970,8 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                       <input
                         type="text"
                         placeholder="Mô tả công dụng và liệu trình ngắn gọn..."
-                        value={newServiceDesc}
-                        onChange={(e) => setNewServiceDesc(e.target.value)}
+                        value={servDesc}
+                        onChange={(e) => setServDesc(e.target.value)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       />
                     </div>
@@ -786,9 +987,10 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 rounded-full bg-[#3a2f2a] text-white text-xs font-bold"
+                      className="px-5 py-2 rounded-full bg-[#3a2f2a] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm"
                     >
-                      Lưu Dịch Vụ Spa
+                      <Check className="w-3.5 h-3.5" />
+                      <span>{editingService ? 'Lưu Cập Nhật Giá & Sale' : 'Lưu Dịch Vụ Spa'}</span>
                     </button>
                   </div>
                 </form>
@@ -796,29 +998,55 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
 
               {/* Danh sách Dịch vụ Spa */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {servicesList.map((s) => (
-                  <div key={s.id} className="bg-white p-4 rounded-2xl border border-[#ebe3d9] flex items-center justify-between shadow-xs">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#f7f1eb] flex items-center justify-center text-lg shrink-0">
-                        {s.icon}
-                      </div>
-                      <div>
-                        <div className="font-serif font-bold text-xs text-[#3a2f2a]">{s.title}</div>
-                        <div className="text-[11px] text-[#6b5c54]">
-                          {s.duration} phút · <strong className="text-[#c9a86c]">{s.price.toLocaleString('vi-VN')}đ</strong>
+                {servicesListToUse.map((s) => {
+                  const hasDiscount = s.originalPrice && s.originalPrice > s.price;
+                  const discountPct = hasDiscount ? Math.round(((s.originalPrice! - s.price) / s.originalPrice!) * 100) : 0;
+
+                  return (
+                    <div key={s.id} className="bg-white p-4 rounded-2xl border border-[#ebe3d9] flex items-center justify-between shadow-xs gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="w-10 h-10 rounded-xl bg-[#f7f1eb] flex items-center justify-center text-lg shrink-0">
+                          {s.icon}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="font-serif font-bold text-xs text-[#3a2f2a] truncate">{s.title}</div>
+                          <div className="text-[11px] text-[#6b5c54] flex flex-wrap items-center gap-1.5 mt-0.5">
+                            <span>{s.duration} phút</span>
+                            <span>·</span>
+                            <strong className="text-[#c9a86c] font-extrabold">{s.price.toLocaleString('vi-VN')}đ</strong>
+                            {hasDiscount && (
+                              <>
+                                <span className="line-through text-[#6b5c54]/60 text-[10px]">{s.originalPrice?.toLocaleString('vi-VN')}đ</span>
+                                <span className="px-1.5 py-0.5 bg-rose-500 text-white font-extrabold text-[9px] rounded-md shrink-0">
+                                  -{discountPct}% SALE
+                                </span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <button
-                      onClick={() => setServicesList(prev => prev.filter(item => item.id !== s.id))}
-                      className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                      title="Xóa dịch vụ"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => openEditService(s)}
+                          className="px-2.5 py-1.5 bg-[#f7f1eb] hover:bg-[#ebe3d9] text-[#3a2f2a] rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                          title="Điều chỉnh Giá & % Sale"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-[#c9a86c]" />
+                          <span className="hidden sm:inline text-[11px]">Sửa Giá/Sale</span>
+                        </button>
+
+                        <button
+                          onClick={() => deleteService(s.id)}
+                          className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          title="Xóa dịch vụ"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -829,11 +1057,11 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
               <div className="flex items-center justify-between bg-white p-4 rounded-2xl border border-[#ebe3d9]">
                 <div>
                   <h3 className="font-serif font-bold text-base text-[#3a2f2a]">Danh Mục Sản Phẩm Mỹ Phẩm & Chăm Sóc</h3>
-                  <p className="text-xs text-[#6b5c54]">Quản lý giá niêm yết, tồn kho và quy cách các dòng sản phẩm bán lẻ.</p>
+                  <p className="text-xs text-[#6b5c54]">Quản lý giá thực tế, giá niêm yết, phần trăm giảm giá (% Sale) và số lượng tồn kho.</p>
                 </div>
 
                 <button
-                  onClick={() => setShowAddProduct(!showAddProduct)}
+                  onClick={openAddProduct}
                   className="px-4 py-2 rounded-full bg-[#c9a86c] hover:bg-[#b08d4f] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
                 >
                   <PlusCircle className="w-4 h-4" />
@@ -841,53 +1069,88 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                 </button>
               </div>
 
-              {/* Form Thêm Sản Phẩm Mới */}
+              {/* Form Thêm / Chỉnh Sửa Sản Phẩm Mới */}
               {showAddProduct && (
-                <form onSubmit={handleAddProductSubmit} className="bg-white p-5 rounded-2xl border-2 border-[#c9a86c] space-y-3 animate-in fade-in duration-150">
+                <form onSubmit={handleSaveProductSubmit} className="bg-white p-5 rounded-2xl border-2 border-[#c9a86c] space-y-3 animate-in fade-in duration-150">
                   <div className="flex justify-between items-center pb-2 border-b border-[#f7f1eb]">
                     <h4 className="font-serif font-bold text-sm text-[#3a2f2a] flex items-center gap-2">
                       <Package className="w-4 h-4 text-[#c9a86c]" />
-                      <span>Tạo Sản Phẩm Mỹ Phẩm Mới</span>
+                      <span>{editingProduct ? `Chỉnh Sửa Sản Phẩm: ${editingProduct.title}` : 'Tạo Sản Phẩm Mỹ Phẩm Mới'}</span>
                     </h4>
                     <button type="button" onClick={() => setShowAddProduct(false)} className="text-[#6b5c54] hover:text-[#3a2f2a]">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-2">
                       <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Tên Sản Phẩm *</label>
                       <input
                         type="text"
                         required
                         placeholder="VD: Kem Dưỡng Tế Bào Gốc Nhau Thai Cừu Lumé"
-                        value={newProdTitle}
-                        onChange={(e) => setNewProdTitle(e.target.value)}
+                        value={prodTitle}
+                        onChange={(e) => setProdTitle(e.target.value)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Quy Cách / Dung Tích (Subtitle)</label>
+                      <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Quy Cách / Dung Tích</label>
                       <input
                         type="text"
                         placeholder="VD: Hũ 50ml - Trẻ hóa làn da"
-                        value={newProdSubtitle}
-                        onChange={(e) => setNewProdSubtitle(e.target.value)}
+                        value={prodSubtitle}
+                        onChange={(e) => setProdSubtitle(e.target.value)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       />
                     </div>
 
+                    {/* GIÁ CẢ & SALE % CONTROLS */}
                     <div>
-                      <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Giá Bán Niêm Yết (VNĐ) *</label>
+                      <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">
+                        Giá Bán Thực Tế (VNĐ) *
+                      </label>
                       <input
                         type="number"
                         required
                         placeholder="VD: 680000"
-                        value={newProdPrice}
-                        onChange={(e) => setNewProdPrice(e.target.value)}
-                        className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
+                        value={prodPrice}
+                        onChange={(e) => handleProdPriceChange(e.target.value)}
+                        className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9] font-extrabold text-[#c9a86c]"
                       />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">
+                        Giá Niêm Yết Gốc chưa giảm (VNĐ)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="VD: 850000 (Để trống nếu không giảm giá)"
+                        value={prodOriginalPrice}
+                        onChange={(e) => handleProdOriginalPriceChange(e.target.value)}
+                        className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9] text-[#6b5c54]"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-rose-700 mb-1 flex items-center justify-between">
+                        <span>Giảm Giá (% Sale)</span>
+                        <Tag className="w-3 h-3 text-rose-500" />
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          placeholder="VD: 20"
+                          value={prodSalePercent}
+                          onChange={(e) => handleProdSalePercentChange(e.target.value)}
+                          className="w-full px-3 py-2 text-xs bg-rose-50/50 rounded-xl border border-rose-200 text-rose-700 font-extrabold pr-8"
+                        />
+                        <span className="absolute right-3 top-2 text-xs font-bold text-rose-500">%</span>
+                      </div>
                     </div>
 
                     <div>
@@ -897,8 +1160,8 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                         required
                         min="0"
                         placeholder="VD: 50"
-                        value={newProdStock}
-                        onChange={(e) => setNewProdStock(e.target.value)}
+                        value={prodStock}
+                        onChange={(e) => setProdStock(e.target.value)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9] font-bold text-emerald-800"
                       />
                     </div>
@@ -906,8 +1169,8 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                     <div>
                       <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Danh Mục Sản Phẩm</label>
                       <select
-                        value={newProdCategory}
-                        onChange={(e) => setNewProdCategory(e.target.value as any)}
+                        value={prodCategory}
+                        onChange={(e) => setProdCategory(e.target.value as any)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       >
                         <option value="facial">Chăm Sóc Da Facial</option>
@@ -920,8 +1183,8 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                     <div>
                       <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Biểu Tượng (Icon)</label>
                       <select
-                        value={newProdIcon}
-                        onChange={(e) => setNewProdIcon(e.target.value)}
+                        value={prodIcon}
+                        onChange={(e) => setProdIcon(e.target.value)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       >
                         <option value="🧴">🧴 Chai hũ kem dưỡng</option>
@@ -931,7 +1194,7 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                       </select>
                     </div>
 
-                    <div className="sm:col-span-2 space-y-1.5">
+                    <div className="sm:col-span-3 space-y-1.5">
                       <label className="block text-[11px] font-bold text-[#3a2f2a]">
                         Hình Ảnh Sản Phẩm (Image URL / Ảnh Đại Diện) *
                       </label>
@@ -939,13 +1202,13 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                         <input
                           type="url"
                           required
-                          value={newProdImage}
-                          onChange={(e) => setNewProdImage(e.target.value)}
+                          value={prodImage}
+                          onChange={(e) => setProdImage(e.target.value)}
                           placeholder="https://images.unsplash.com/photo-..."
                           className="flex-1 px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                         />
                         <img
-                          src={newProdImage}
+                          src={prodImage}
                           alt="Preview"
                           className="w-9 h-9 object-cover rounded-xl border border-[#ebe3d9] shrink-0"
                           onError={(e) => {
@@ -957,28 +1220,28 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                         <span className="text-[10px] text-[#6b5c54] self-center">Gợi ý ảnh mẫu:</span>
                         <button
                           type="button"
-                          onClick={() => setNewProdImage('https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80')}
+                          onClick={() => setProdImage('https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80')}
                           className="px-2 py-0.5 bg-[#f7f1eb] hover:bg-[#ebe3d9] text-[10px] font-semibold text-[#3a2f2a] rounded-md transition-colors"
                         >
                           Hũ Kem Dưỡng
                         </button>
                         <button
                           type="button"
-                          onClick={() => setNewProdImage('https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=800&q=80')}
+                          onClick={() => setProdImage('https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?auto=format&fit=crop&w=800&q=80')}
                           className="px-2 py-0.5 bg-[#f7f1eb] hover:bg-[#ebe3d9] text-[10px] font-semibold text-[#3a2f2a] rounded-md transition-colors"
                         >
                           Chai Tinh Dầu
                         </button>
                         <button
                           type="button"
-                          onClick={() => setNewProdImage('https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80')}
+                          onClick={() => setProdImage('https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80')}
                           className="px-2 py-0.5 bg-[#f7f1eb] hover:bg-[#ebe3d9] text-[10px] font-semibold text-[#3a2f2a] rounded-md transition-colors"
                         >
                           Serum Dưỡng Da
                         </button>
                         <button
                           type="button"
-                          onClick={() => setNewProdImage('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80')}
+                          onClick={() => setProdImage('https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80')}
                           className="px-2 py-0.5 bg-[#f7f1eb] hover:bg-[#ebe3d9] text-[10px] font-semibold text-[#3a2f2a] rounded-md transition-colors"
                         >
                           Sơn Gel Móng
@@ -986,13 +1249,13 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                       </div>
                     </div>
 
-                    <div className="sm:col-span-2">
+                    <div className="sm:col-span-3">
                       <label className="block text-[11px] font-bold text-[#3a2f2a] mb-1">Mô Tả Sản Phẩm & Công Dụng</label>
                       <input
                         type="text"
                         placeholder="Mô tả công dụng sản phẩm chi tiết..."
-                        value={newProdDesc}
-                        onChange={(e) => setNewProdDesc(e.target.value)}
+                        value={prodDesc}
+                        onChange={(e) => setProdDesc(e.target.value)}
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       />
                     </div>
@@ -1008,9 +1271,10 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 rounded-full bg-[#3a2f2a] text-white text-xs font-bold shadow-sm"
+                      className="px-5 py-2 rounded-full bg-[#3a2f2a] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm"
                     >
-                      Lưu Sản Phẩm Vào DB
+                      <Check className="w-3.5 h-3.5" />
+                      <span>{editingProduct ? 'Lưu Cập Nhật Giá & Sale' : 'Lưu Sản Phẩm Vào DB'}</span>
                     </button>
                   </div>
                 </form>
@@ -1020,6 +1284,9 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {(productsCatalog || []).map((p) => {
                   const stock = p.stockQuantity ?? 50;
+                  const hasDiscount = p.originalPrice && p.originalPrice > p.price;
+                  const discountPct = hasDiscount ? Math.round(((p.originalPrice! - p.price) / p.originalPrice!) * 100) : 0;
+
                   return (
                     <div key={p.id} className="bg-white p-4 rounded-2xl border border-[#ebe3d9] flex items-center justify-between shadow-xs gap-3">
                       <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -1034,8 +1301,16 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                         <div className="min-w-0 flex-1">
                           <div className="font-serif font-bold text-xs text-[#3a2f2a] truncate">{p.title}</div>
                           <div className="text-[11px] text-[#6b5c54] truncate">{p.subtitle}</div>
-                          <div className="text-xs font-extrabold text-[#c9a86c] mt-0.5">
-                            {p.price.toLocaleString('vi-VN')} đ
+                          <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                            <span className="text-xs font-extrabold text-[#c9a86c]">{p.price.toLocaleString('vi-VN')} đ</span>
+                            {hasDiscount && (
+                              <>
+                                <span className="line-through text-[#6b5c54]/60 text-[10px]">{p.originalPrice?.toLocaleString('vi-VN')}đ</span>
+                                <span className="px-1.5 py-0.5 bg-rose-500 text-white font-extrabold text-[9px] rounded-md shrink-0">
+                                  -{discountPct}% SALE
+                                </span>
+                              </>
+                            )}
                           </div>
                           <div className="flex items-center gap-2 mt-1.5">
                             <span className="text-[10px] text-[#6b5c54] font-semibold">Tồn kho:</span>
@@ -1069,13 +1344,24 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                         </div>
                       </div>
 
-                      <button
-                        onClick={() => deleteProduct(p.id)}
-                        className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer shrink-0"
-                        title="Xóa sản phẩm khỏi DB"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => openEditProduct(p)}
+                          className="px-2.5 py-1.5 bg-[#f7f1eb] hover:bg-[#ebe3d9] text-[#3a2f2a] rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                          title="Điều chỉnh Giá & % Sale"
+                        >
+                          <Edit3 className="w-3.5 h-3.5 text-[#c9a86c]" />
+                          <span className="hidden sm:inline text-[11px]">Sửa Giá/Sale</span>
+                        </button>
+
+                        <button
+                          onClick={() => deleteProduct(p.id)}
+                          className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          title="Xóa sản phẩm khỏi DB"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
