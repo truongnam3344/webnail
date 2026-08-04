@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, Clock, Sparkles, Filter, Check, Eye, Plus } from 'lucide-react';
 import { SERVICES_DATA } from '../data/servicesData';
 import { ServiceItem, ServiceCategory } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 interface PricingSectionProps {
   selectedCategory: string;
@@ -16,7 +17,10 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   onViewDetail,
   onBookService,
 }) => {
+  const { servicesCatalog } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+
+  const servicesListToUse = servicesCatalog && servicesCatalog.length > 0 ? servicesCatalog : SERVICES_DATA;
 
   const categories: { id: ServiceCategory; label: string; icon: string }[] = [
     { id: 'all', label: 'Tất cả dịch vụ', icon: '✨' },
@@ -27,7 +31,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   ];
 
   const filteredServices = useMemo(() => {
-    return SERVICES_DATA.filter((service) => {
+    return servicesListToUse.filter((service) => {
       // Only include actual services (not physical products)
       const isActualService = service.itemType !== 'product' && service.duration > 0;
       const matchesCategory =
@@ -36,12 +40,12 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       const matchesSearch =
         !query ||
         service.title.toLowerCase().includes(query) ||
-        service.description.toLowerCase().includes(query) ||
+        (service.description && service.description.toLowerCase().includes(query)) ||
         (service.subtitle && service.subtitle.toLowerCase().includes(query));
 
       return isActualService && matchesCategory && matchesSearch;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [servicesListToUse, selectedCategory, searchQuery]);
 
   return (
     <section id="pricing" className="py-20 bg-[#f7f1eb]">
