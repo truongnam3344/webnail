@@ -24,7 +24,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const { currentUser, addAppointment } = useAuth();
+  const { currentUser, addAppointment, servicesCatalog } = useAuth();
+  const availableServices = (servicesCatalog && servicesCatalog.length > 0) ? servicesCatalog : SERVICES_DATA;
 
   // Step state: 1 (Services), 2 (Specialist), 3 (Date & Time), 4 (Contact & Promo), 5 (Success Confirmation)
   const [step, setStep] = useState<number>(1);
@@ -71,18 +72,18 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   // Initialize pre-selected service if provided
   useEffect(() => {
     if (initialServiceId) {
-      const found = SERVICES_DATA.find((s) => s.id === initialServiceId);
+      const found = availableServices.find((s) => s.id === initialServiceId);
       if (found) {
         setSelectedServices([found]);
       }
-    } else if (selectedServices.length === 0 && SERVICES_DATA.length > 0) {
-      setSelectedServices([SERVICES_DATA[0]]);
+    } else if (selectedServices.length === 0 && availableServices.length > 0) {
+      setSelectedServices([availableServices[0]]);
     }
 
     if (initialPromoCode) {
       handleApplyPromo(initialPromoCode);
     }
-  }, [initialServiceId, initialPromoCode]);
+  }, [initialServiceId, initialPromoCode, servicesCatalog]);
 
   // Apply Promo Logic
   const handleApplyPromo = (codeToTest: string) => {
@@ -274,7 +275,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               </div>
 
               <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
-                {SERVICES_DATA.filter((s) => s.itemType !== 'product' && s.duration > 0).map((service) => {
+                {availableServices.filter((s) => s.itemType !== 'product' && s.duration > 0).map((service) => {
                   const isSelected = selectedServices.some((s) => s.id === service.id);
                   return (
                     <div

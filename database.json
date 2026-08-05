@@ -260,13 +260,14 @@
       "stockQuantity": 45,
       "icon": "🧴",
       "description": "Chiết xuất 100% tinh dầu vỏ bưởi da xanh ép lạnh kết hợp cô đặc bồ kết nướng.",
-      "image": "https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80",
+      "image": "https://tse4.mm.bing.net/th/id/OIP.lLgBKoZttnTOZyT9UNla9QHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
       "popular": true,
       "benefits": [
         "Ngăn ngừa gãy rụng tóc",
         "Kích thích mọc tóc nhanh",
         "Mùi hương thảo mộc thư giãn"
-      ]
+      ],
+      "itemType": "product"
     },
     {
       "id": "prod-facial-serum-ha",
@@ -323,6 +324,159 @@
         "Chống giòn gãy móng",
         "Làm mềm xước măng rô",
         "Hương hoa quả ngọt dịu"
+      ]
+    },
+    {
+      "id": "lume-lipstick-velvet",
+      "category": "makeup",
+      "title": "Son Môi Dưỡng Mịn Lụa Velvet Lumé",
+      "subtitle": "Son dưỡng có màu tự nhiên & chống khô môi",
+      "price": 220000,
+      "originalPrice": 320000,
+      "duration": 0,
+      "stockQuantity": 50,
+      "icon": "💄",
+      "description": "Son dưỡng nhung lụa nhiều dưỡng chất nuôi dưỡng đôi môi căng mọng, tự nhiên.",
+      "image": "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500&q=80",
+      "popular": true,
+      "benefits": [
+        "Màu sắc tự nhiên",
+        "Chống khô nứt nẻ môi",
+        "Nhiều dưỡng chất thiên nhiên"
+      ]
+    },
+    {
+      "id": "lume-organic-perfume",
+      "category": "fragrances",
+      "title": "Nước Hoa Thảo Mộc Lumé Organic Elixir",
+      "subtitle": "Hương hoa hồng nhung & tinh dầu gỗ đàn hương",
+      "price": 700000,
+      "originalPrice": 700000,
+      "duration": 0,
+      "stockQuantity": 50,
+      "icon": "🌸",
+      "description": "Nước hoa xịt body lưu hương 12 giờ dịu nhẹ thư thái quyến rũ.",
+      "image": "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=500&q=80",
+      "popular": true,
+      "benefits": [
+        "Lưu hương 12 tiếng",
+        "Hương thảo mộc quý phái",
+        "Không gây kích ứng da"
+      ],
+      "itemType": "product"
+    },
+    {
+      "id": "silk-serum",
+      "category": "facial",
+      "title": "SilkSerum Serum Collagen",
+      "subtitle": "Tinh chất dưỡng căng bóng da & phục hồi",
+      "price": 350000,
+      "originalPrice": 700000,
+      "duration": 0,
+      "stockQuantity": 50,
+      "icon": "✨",
+      "description": "Tinh chất Collagen dạng serum ngấm sâu nuôi dưỡng làn da khỏe mạnh, xóa mờ nếp nhăn.",
+      "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&q=80",
+      "popular": true,
+      "benefits": [
+        "Mờ thâm mờ nếp nhăn",
+        "Khóa ẩm sâu 24 giờ",
+        "Làn da phát sáng mịn màng"
+      ]
+    },
+    {
+      "id": "silkskin-serum",
+      "category": "facial",
+      "title": "SilkSkin Serum Glow",
+      "subtitle": "Serum làm sáng da & mờ thâm nám",
+      "price": 450000,
+      "originalPrice": 600000,
+      "duration": 0,
+      "stockQuantity": 50,
+      "icon": "💎",
+      "description": "Chứa Vitamin C tinh khiết 15% cùng Hyaluronic Acid giúp làn da bật tông trắng sáng rạng rỡ.",
+      "image": "https://tse3.mm.bing.net/th/id/OIP.eFrezuv-sdHSr72mz5y49gHaNK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
+      "popular": true,
+      "benefits": [
+        "Làm sáng tông da",
+        "Giảm vết thâm nám",
+        "Tăng cường sức đề kháng cho da"
+      ]
+    },
+    {
+      "id": "argan-glow",
+      "category": "spa",
+      "title": "Argan Glow Body Oil",
+      "subtitle": "Dầu massage body Argan Morocco",
+      "price": 320000,
+      "originalPrice": 400000,
+      "duration": 0,
+      "stockQuantity": 50,
+      "icon": "🪷",
+      "description": "Chiết xuất từ hạt Argan tươi Morocco nguyên chất giúp mềm da, giảm căng thẳng tuyệt vời.",
+      "image": "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=500&q=80",
+      "popular": true,
+      "benefits": [
+        "Dưỡng ẩm sâu làn da",
+        "Mùi thơm dịu nhẹ thư thái",
+        "Làm mịn màng làn da toàn thân"
+      ]
+    },
+    {
+      "id": "argan-cream",
+      "category": "spa",
+      "title": "Argan Cream Nourishing",
+      "subtitle": "Kem dưỡng thể chuyên sâu & thơm dịu",
+      "price": 280000,
+      "originalPrice": 350000,
+      "duration": 0,
+      "stockQuantity": 50,
+      "icon": "🌿",
+      "description": "Cấp ẩm 24h giúp da mịn màng như lụa, khóa ẩm tự nhiên không gây bết dính.",
+      "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&q=80",
+      "popular": true,
+      "benefits": [
+        "Khóa ẩm mịn lụa",
+        "Mùi hương sang trọng",
+        "Thấm nhanh không nhờn"
+      ]
+    },
+    {
+      "id": "nail-luxury-gel",
+      "category": "nail",
+      "title": "Bộ Chăm Sóc Móng Gel Luxury",
+      "subtitle": "Sơn gel Hàn Quốc & thiết kế móng",
+      "price": 180000,
+      "originalPrice": 250000,
+      "duration": 0,
+      "stockQuantity": 50,
+      "icon": "💅",
+      "description": "Sơn gel lên màu chuẩn, sáng bóng bền đẹp đến 4 tuần không bong tróc.",
+      "image": "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=500&q=80",
+      "popular": true,
+      "benefits": [
+        "Màu sắc bền đẹp",
+        "Bảo vệ móng chắc khỏe",
+        "An toàn chuẩn salon"
+      ]
+    },
+    {
+      "id": "prod-cream-gold-24k",
+      "category": "facial",
+      "title": "Kem Dưỡng Da Vàng 24K & Peptide Collagen Lumé",
+      "subtitle": "Hũ 50ml - Trẻ hóa & Căng bóng da",
+      "price": 680000,
+      "originalPrice": 890000,
+      "duration": 0,
+      "stockQuantity": 45,
+      "icon": "🧴",
+      "description": "Chiết xuất vàng 24K nguyên chất kết hợp Niacinamide 5% và Peptide kép giúp mờ thâm nám.",
+      "image": "https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80",
+      "popular": true,
+      "benefits": [
+        "Mờ thâm mờ nếp nhăn",
+        "Khóa ẩm sâu 24 giờ",
+        "Làn da phát sáng mịn màng"
       ]
     }
   ],
@@ -480,7 +634,7 @@
       "description": "Chống oxy hóa mạnh mẽ, xua tan sắc tố sẫm màu mang lại làn da trắng hồng.",
       "image": "https://th.bing.com/th/id/OIP.Dau8hngwWSNnUeB5t6Z-lwHaJ2?r=0&o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3",
       "discountTag": "50% Off",
-      "rating": 5.0,
+      "rating": 5,
       "reviewCount": 89
     },
     {
@@ -517,13 +671,87 @@
     }
   ],
   "instaPhotos": [
-    { "id": "1", "url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80" },
-    { "id": "2", "url": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80" },
-    { "id": "3", "url": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80" },
-    { "id": "4", "url": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=400&q=80" },
-    { "id": "5", "url": "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&q=80" },
-    { "id": "6", "url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80" },
-    { "id": "7", "url": "https://i.pinimg.com/originals/53/bf/fc/53bffc774772840dc0992d589e3e6e60.jpg" },
-    { "id": "8", "url": "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=400&q=80" }
+    {
+      "id": "1",
+      "url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80"
+    },
+    {
+      "id": "2",
+      "url": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=400&q=80"
+    },
+    {
+      "id": "3",
+      "url": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80"
+    },
+    {
+      "id": "4",
+      "url": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=400&q=80"
+    },
+    {
+      "id": "5",
+      "url": "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=400&q=80"
+    },
+    {
+      "id": "6",
+      "url": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&q=80"
+    },
+    {
+      "id": "7",
+      "url": "https://i.pinimg.com/originals/53/bf/fc/53bffc774772840dc0992d589e3e6e60.jpg"
+    },
+    {
+      "id": "8",
+      "url": "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=400&q=80"
+    }
+  ],
+  "blogsCatalog": [
+    {
+      "id": "blog-1",
+      "title": "Your Ultimate Guide to Healthy, Radiant Skin",
+      "author": "Jenny Alexander",
+      "date": "22 January 2025",
+      "category": "Skincare Tips",
+      "image": "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80",
+      "summary": "Bí quyết chăm sóc da hàng ngày tại nhà giúp làn da luôn duy trì độ ẩm tự nhiên, ngăn ngừa lão hóa và phục hồi hàng rào bảo vệ da.",
+      "readTime": "5 phút đọc",
+      "views": 1240,
+      "content": "Làn da khỏe đẹp rạng rỡ không phải là kết quả của một đêm, mà là sự kiên trì chăm sóc mỗi ngày với những sản phẩm phù hợp. Dưới đây là 4 bước cốt lõi không thể thiếu:\n\n### 1. Làm sạch kép (Double Cleansing)\nBắt đầu buổi tối bằng việc tẩy trang loại bỏ dầu thừa, bụi mịn và kem chống nắng. Sau đó dùng sữa rửa mặt dịu nhẹ có độ pH 5.5 để làm sạch sâu lỗ chân lông mà không làm mất đi độ ẩm tự nhiên.\n\n### 2. Cân bằng & Cấp ẩm đa tầng với HA Serum\nNgay sau khi rửa mặt, hãy vỗ nhẹ nước hoa hồng hoặc Toner không chứa cồn, tiếp nối bằng 3-4 giọt Tinh chất Serum HA Multi-Hydrating. HA (Hyaluronic Acid) giúp hút giữ lượng nước gấp 1000 lần trọng lượng của nó, duy trì bề mặt da căng mọng.\n\n### 3. Phục hồi hàng rào da bằng Kem dưỡng chuyên sâu\nKem dưỡng khóa ẩm chứa Ceramides & Niacinamide sẽ đóng vai trò như lớp khiên bảo vệ, ngăn ngừa sự thất thoát độ ẩm qua da và làm dịu các vùng da mẩn đỏ hay nhạy cảm.\n\n### 4. Không bao giờ quên Kem chống nắng phổ rộng\nVào ban ngày, dù ở trong nhà hay ngoài trời, kem chống nắng SPF 50+ PA++++ luôn là tấm lá chắn quan trọng nhất chống lại tia UVA/UVB."
+    },
+    {
+      "id": "blog-2",
+      "title": "The Best Body Care Products for Every Skin Type",
+      "author": "Jenny Alexander",
+      "date": "18 January 2025",
+      "category": "Body Care",
+      "image": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80",
+      "summary": "Lựa chọn dầu dưỡng body hữu cơ và kem dưỡng phù hợp cho từng mùa trong năm giúp cơ thể luôn ngạt ngào hương thơm dịu nhẹ.",
+      "readTime": "7 phút đọc",
+      "views": 890,
+      "content": "Chăm sóc da toàn thân cũng quan trọng không kém gì chăm sóc da mặt. Một làn da cơ thể mềm mịn, thơm mát sẽ mang lại sự tự tin và cảm giác thư thái suốt cả ngày dài.\n\n### Dầu Dưỡng Argan Morocco Nguyên Chất\nDầu Argan giàu Vitamin E và Axit béo thiết yếu là bí quyết của các liệu trình Spa cao cấp. Thoa vài giọt dầu ngay sau khi tắm khi da còn ẩm giúp các dưỡng chất thẩm thấu tức thì, không gây bết dính.\n\n### Tẩy Tế Bào Chết Định Kỳ 2 Lần / Tuần\nDùng muối khoáng biển hoặc hạt cà phê hữu cơ massage nhẹ nhàng theo chuyển động tròn tại các vùng da thô ráp như khuỷu tay, đầu gối và gót chân."
+    },
+    {
+      "id": "blog-3",
+      "title": "Why Sun Protection is Essential for Healthy Skin",
+      "author": "Jenny Alexander",
+      "date": "12 January 2025",
+      "category": "Beauty Guide",
+      "image": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
+      "summary": "Tầm quan trọng của việc dùng kem chống nắng phổ rộng mỗi ngày để chống lão hóa sớm, tăng sinh collagen và ngăn ngừa tàn nhang.",
+      "readTime": "4 phút đọc",
+      "views": 1520,
+      "content": "Nhiều người thường bỏ qua kem chống nắng vào những ngày trời râm mát hay khi làm việc văn phòng. Tuy nhiên, tia UVA có khả năng xuyên qua lớp kính cửa sổ và mây mù, gây phá hủy sợi Collagen nằm sâu dưới da.\n\n### Tia UVA vs Tia UVB: Khác Nhau Như Thế Nào?\n- Tia UVB: Gây cháy nắng, rát da và đỏ da trực tiếp.\n- Tia UVA: Xuyên sâu vào tầng trung bì, phá hủy Collagen, tạo nếp nhăn và đốm nâu thâm nám.\n\n### Quy Tắc 2 Ngón Tay\nHãy dùng lượng kem chống nắng tương đương chiều dài 2 ngón tay cho toàn bộ khuôn mặt và cổ để đảm bảo chỉ số SPF đạt đúng hiệu quả."
+    },
+    {
+      "id": "blog-4",
+      "title": "Bí Quyết Phục Hồi Làn Da Căng Bóng Với Tinh Chất HA Multi-Hydrating",
+      "author": "Dr. Elena Vance",
+      "date": "05 February 2025",
+      "category": "Facial Care",
+      "image": "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80",
+      "summary": "Khám phá liệu trình điện di HA đa tầng tại Lumé Spa kết hợp serum dưỡng da căng bóng chuẩn y khoa.",
+      "readTime": "6 phút đọc",
+      "views": 2100,
+      "content": "Liệu trình điện di tinh chất HA đa tầng tại Lumé Spa là giải pháp cứu tinh cho làn da khô ráp, xỉn màu hoặc mệt mỏi do thức khuya và ô nhiễm môi trường.\n\n### Cơ Chế Hoạt Động Của Điện Di Điện Trường\nCông nghệ điện di lạnh giúp mở tạm thời các kênh tế bào, đưa tinh chất Hyaluronic Acid phân tử nhỏ đi sâu vào lớp trung bì mà không cần can thiệp xấm lấn."
+    }
   ]
 }

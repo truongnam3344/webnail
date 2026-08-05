@@ -113,9 +113,32 @@ export const NewArrivalsSection: React.FC<NewArrivalsProps> = ({
   onBookService,
 }) => {
   const { t } = useLanguage();
-  const { newArrivals } = useAuth();
+  const { newArrivals, productsCatalog, servicesCatalog } = useAuth();
 
-  const itemsToDisplay = newArrivals && newArrivals.length > 0 ? newArrivals : NEW_ARRIVALS;
+  const allCatalogItems = [...(productsCatalog || []), ...(servicesCatalog || [])];
+
+  const rawItems = newArrivals && newArrivals.length > 0 ? newArrivals : NEW_ARRIVALS;
+
+  const itemsToDisplay = rawItems.map((p) => {
+    const matched = allCatalogItems.find(c => c.id === p.id || c.title.toLowerCase().trim() === p.title.toLowerCase().trim());
+    if (matched) {
+      const hasDiscount = !!(matched.originalPrice && matched.originalPrice > matched.price);
+      const discountPct = hasDiscount ? Math.round(((matched.originalPrice! - matched.price) / matched.originalPrice!) * 100) : 0;
+      return {
+        ...p,
+        ...matched,
+        price: matched.price,
+        originalPrice: hasDiscount ? matched.originalPrice : undefined,
+        discountTag: hasDiscount ? `${discountPct}% Off` : undefined,
+      };
+    }
+    const hasDiscount = !!(p.originalPrice && p.originalPrice > p.price);
+    return {
+      ...p,
+      originalPrice: hasDiscount ? p.originalPrice : undefined,
+      discountTag: hasDiscount ? p.discountTag : undefined,
+    };
+  });
 
   return (
     <section className="bg-[#f7f4ee] py-16 border-t border-[#e6dec8]/60">
@@ -179,9 +202,11 @@ export const NewArrivalsSection: React.FC<NewArrivalsProps> = ({
                 className="bg-white rounded-2xl overflow-hidden shadow-xs hover:shadow-lg transition-all duration-300 border border-[#e8dfcb] group cursor-pointer flex flex-col justify-between p-3.5"
               >
                 <div className="relative aspect-square bg-[#f5f0e6] rounded-xl overflow-hidden mb-3">
-                  <span className="absolute top-2 left-2 z-10 px-2 py-0.5 bg-[#2d4a3e] text-white text-[10px] font-extrabold rounded-md uppercase">
-                    {product.discountTag}
-                  </span>
+                  {product.discountTag && product.originalPrice && product.originalPrice > product.price && (
+                    <span className="absolute top-2 left-2 z-10 px-2 py-0.5 bg-[#2d4a3e] text-white text-[10px] font-extrabold rounded-md uppercase">
+                      {product.discountTag}
+                    </span>
+                  )}
                   <img
                     src={product.image}
                     alt={product.title}
@@ -210,9 +235,11 @@ export const NewArrivalsSection: React.FC<NewArrivalsProps> = ({
                       <span className="text-xs font-bold text-[#2d4a3e]">
                         {product.price.toLocaleString('vi-VN')}đ
                       </span>
-                      <span className="ml-1 text-[10px] text-gray-400 line-through">
-                        {product.originalPrice?.toLocaleString('vi-VN')}đ
-                      </span>
+                      {product.originalPrice && product.originalPrice > product.price && (
+                        <span className="ml-1 text-[10px] text-gray-400 line-through">
+                          {product.originalPrice.toLocaleString('vi-VN')}đ
+                        </span>
+                      )}
                     </div>
 
                     <button

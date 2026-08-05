@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { SERVICES_DATA } from '../data/servicesData';
 import { ServiceItem } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 interface ServicesSectionProps {
   onSelectService: (service: ServiceItem) => void;
@@ -12,6 +13,8 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
   onSelectService,
   onFilterCategory,
 }) => {
+  const { servicesCatalog } = useAuth();
+  const servicesListToUse = (servicesCatalog && servicesCatalog.length > 0) ? servicesCatalog : SERVICES_DATA;
   const categories = [
     {
       id: 'spa',
@@ -44,7 +47,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
   ];
 
   const handleCategoryClick = (catId: string, sampleId: string) => {
-    const matchedService = SERVICES_DATA.find((s) => s.id === sampleId);
+    const matchedService = servicesListToUse.find((s) => s.id === sampleId);
     if (matchedService) {
       onSelectService(matchedService);
     } else {

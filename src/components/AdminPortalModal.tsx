@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   X, Calendar, DollarSign, Users, Sparkles, Search, Filter, CheckCircle2,
   Clock3, AlertCircle, Play, UserCheck, PlusCircle, Edit3, Trash2, TrendingUp, BarChart3, ShieldCheck, Mail,
-  ShoppingBag, Package, Tag, FileText, Check, MessageSquare, Star, Eye, EyeOff, Instagram, Image as ImageIcon
+  ShoppingBag, Package, Tag, FileText, Check, MessageSquare, Star, Eye, EyeOff, Instagram, Image as ImageIcon, BookOpen
 } from 'lucide-react';
 import { useAuth, NewArrivalItem, InstaPhotoItem } from '../context/AuthContext';
 import { EmailConfirmationModal } from './EmailConfirmationModal';
 import { SERVICES_DATA as INITIAL_SERVICES } from '../data/servicesData';
 import { SPECIALISTS_DATA as INITIAL_SPECIALISTS } from '../data/specialistsData';
-import { ServiceItem, Specialist, Appointment, ProductOrder, UserRole } from '../types';
+import { ServiceItem, Specialist, Appointment, ProductOrder, UserRole, BlogArticle } from '../types';
 
 interface AdminPortalModalProps {
   isOpen: boolean;
@@ -47,9 +47,26 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     instaPhotos,
     addInstaPhoto,
     deleteInstaPhoto,
+    blogsCatalog,
+    addBlogArticle,
+    updateBlogArticle,
+    deleteBlogArticle,
   } = useAuth();
   
-  const [activeTab, setActiveTab] = useState<'bookings' | 'product_orders' | 'services' | 'products' | 'staff' | 'reviews' | 'analytics' | 'new_arrivals' | 'insta'>('bookings');
+  const [activeTab, setActiveTab] = useState<'bookings' | 'product_orders' | 'services' | 'products' | 'blogs' | 'staff' | 'reviews' | 'analytics' | 'new_arrivals' | 'insta'>('bookings');
+
+  // Blog Management State
+  const blogFormRef = useRef<HTMLDivElement>(null);
+  const [showAddBlog, setShowAddBlog] = useState(false);
+  const [editingBlog, setEditingBlog] = useState<BlogArticle | null>(null);
+  const [blogTitle, setBlogTitle] = useState('');
+  const [blogAuthor, setBlogAuthor] = useState('Jenny Alexander');
+  const [blogCategory, setBlogCategory] = useState('Skincare Tips');
+  const [blogImage, setBlogImage] = useState('https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80');
+  const [blogSummary, setBlogSummary] = useState('');
+  const [blogContent, setBlogContent] = useState('');
+  const [blogReadTime, setBlogReadTime] = useState('5 phút đọc');
+  const [blogTags, setBlogTags] = useState('skincare, spa, lam-dep');
   
   // New Arrivals management state
   const [showAddArrival, setShowAddArrival] = useState(false);
@@ -133,9 +150,10 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
   const [prodSalePercent, setProdSalePercent] = useState('');
   const [prodStock, setProdStock] = useState('50');
   const [prodImage, setProdImage] = useState('https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80');
-  const [prodCategory, setProdCategory] = useState<'facial' | 'hair' | 'spa' | 'nail'>('facial');
+  const [prodCategory, setProdCategory] = useState<string>('facial');
   const [prodIcon, setProdIcon] = useState('🧴');
   const [prodDesc, setProdDesc] = useState('');
+  const [adminProdCategoryFilter, setAdminProdCategoryFilter] = useState<string>('all');
 
   // Staff management local state
   const [specialistsList, setSpecialistsList] = useState<Specialist[]>(INITIAL_SPECIALISTS);
@@ -143,24 +161,29 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
   // Auto calculation helpers for Service price & sale %
   const handleServOriginalPriceChange = (origVal: string) => {
     setServOriginalPrice(origVal);
-    if (servSalePercent && origVal) {
-      const orig = parseInt(origVal, 10);
-      const pct = parseFloat(servSalePercent);
-      if (!isNaN(orig) && !isNaN(pct) && pct >= 0 && pct <= 100) {
-        setServPrice(Math.round(orig * (1 - pct / 100)).toString());
-      }
-    } else if (servPrice && origVal) {
-      const orig = parseInt(origVal, 10);
+    if (!origVal) {
+      setServSalePercent('');
+      return;
+    }
+    const orig = parseInt(origVal, 10);
+    if (servPrice) {
       const price = parseInt(servPrice, 10);
-      if (!isNaN(orig) && !isNaN(price) && orig > price) {
-        setServSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+      if (!isNaN(orig) && !isNaN(price)) {
+        if (orig > price) {
+          setServSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+        } else {
+          setServSalePercent('');
+        }
       }
     }
   };
 
   const handleServSalePercentChange = (pctVal: string) => {
     setServSalePercent(pctVal);
-    if (servOriginalPrice && pctVal !== '') {
+    if (pctVal === '' || pctVal === '0') {
+      setServOriginalPrice('');
+      setServSalePercent('');
+    } else if (servOriginalPrice && pctVal !== '') {
       const orig = parseInt(servOriginalPrice, 10);
       const pct = parseFloat(pctVal);
       if (!isNaN(orig) && !isNaN(pct) && pct >= 0 && pct <= 100) {
@@ -174,8 +197,13 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     if (servOriginalPrice && priceVal) {
       const orig = parseInt(servOriginalPrice, 10);
       const price = parseInt(priceVal, 10);
-      if (!isNaN(orig) && !isNaN(price) && orig > price) {
-        setServSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+      if (!isNaN(orig) && !isNaN(price)) {
+        if (orig > price) {
+          setServSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+        } else {
+          setServSalePercent('');
+          setServOriginalPrice('');
+        }
       }
     }
   };
@@ -197,9 +225,10 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     setEditingService(service);
     setServTitle(service.title);
     setServPrice(service.price.toString());
-    setServOriginalPrice(service.originalPrice ? service.originalPrice.toString() : '');
-    if (service.originalPrice && service.originalPrice > service.price) {
-      const pct = Math.round(((service.originalPrice - service.price) / service.originalPrice) * 100);
+    const hasDiscount = service.originalPrice && service.originalPrice > service.price;
+    setServOriginalPrice(hasDiscount ? service.originalPrice!.toString() : '');
+    if (hasDiscount) {
+      const pct = Math.round(((service.originalPrice! - service.price) / service.originalPrice!) * 100);
       setServSalePercent(pct.toString());
     } else {
       setServSalePercent('');
@@ -216,7 +245,10 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     if (!servTitle || !servPrice) return;
 
     const priceVal = parseInt(servPrice, 10);
-    const origVal = servOriginalPrice ? parseInt(servOriginalPrice, 10) : undefined;
+    let origVal: number | undefined = servOriginalPrice ? parseInt(servOriginalPrice, 10) : undefined;
+    if (!origVal || isNaN(origVal) || origVal <= priceVal || !servSalePercent || servSalePercent === '0') {
+      origVal = undefined;
+    }
 
     const itemData: ServiceItem = {
       ...(editingService || {}),
@@ -251,24 +283,29 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
   // Auto calculation helpers for Product price & sale %
   const handleProdOriginalPriceChange = (origVal: string) => {
     setProdOriginalPrice(origVal);
-    if (prodSalePercent && origVal) {
-      const orig = parseInt(origVal, 10);
-      const pct = parseFloat(prodSalePercent);
-      if (!isNaN(orig) && !isNaN(pct) && pct >= 0 && pct <= 100) {
-        setProdPrice(Math.round(orig * (1 - pct / 100)).toString());
-      }
-    } else if (prodPrice && origVal) {
-      const orig = parseInt(origVal, 10);
+    if (!origVal) {
+      setProdSalePercent('');
+      return;
+    }
+    const orig = parseInt(origVal, 10);
+    if (prodPrice) {
       const price = parseInt(prodPrice, 10);
-      if (!isNaN(orig) && !isNaN(price) && orig > price) {
-        setProdSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+      if (!isNaN(orig) && !isNaN(price)) {
+        if (orig > price) {
+          setProdSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+        } else {
+          setProdSalePercent('');
+        }
       }
     }
   };
 
   const handleProdSalePercentChange = (pctVal: string) => {
     setProdSalePercent(pctVal);
-    if (prodOriginalPrice && pctVal !== '') {
+    if (pctVal === '' || pctVal === '0') {
+      setProdOriginalPrice('');
+      setProdSalePercent('');
+    } else if (prodOriginalPrice && pctVal !== '') {
       const orig = parseInt(prodOriginalPrice, 10);
       const pct = parseFloat(pctVal);
       if (!isNaN(orig) && !isNaN(pct) && pct >= 0 && pct <= 100) {
@@ -282,8 +319,13 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     if (prodOriginalPrice && priceVal) {
       const orig = parseInt(prodOriginalPrice, 10);
       const price = parseInt(priceVal, 10);
-      if (!isNaN(orig) && !isNaN(price) && orig > price) {
-        setProdSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+      if (!isNaN(orig) && !isNaN(price)) {
+        if (orig > price) {
+          setProdSalePercent(Math.round(((orig - price) / orig) * 100).toString());
+        } else {
+          setProdSalePercent('');
+          setProdOriginalPrice('');
+        }
       }
     }
   };
@@ -308,9 +350,10 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     setProdTitle(product.title);
     setProdSubtitle(product.subtitle || '');
     setProdPrice(product.price.toString());
-    setProdOriginalPrice(product.originalPrice ? product.originalPrice.toString() : '');
-    if (product.originalPrice && product.originalPrice > product.price) {
-      const pct = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+    const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+    setProdOriginalPrice(hasDiscount ? product.originalPrice!.toString() : '');
+    if (hasDiscount) {
+      const pct = Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100);
       setProdSalePercent(pct.toString());
     } else {
       setProdSalePercent('');
@@ -328,7 +371,10 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     if (!prodTitle || !prodPrice) return;
 
     const priceVal = parseInt(prodPrice, 10);
-    const origVal = prodOriginalPrice ? parseInt(prodOriginalPrice, 10) : undefined;
+    let origVal: number | undefined = prodOriginalPrice ? parseInt(prodOriginalPrice, 10) : undefined;
+    if (!origVal || isNaN(origVal) || origVal <= priceVal || !prodSalePercent || prodSalePercent === '0') {
+      origVal = undefined;
+    }
 
     const itemData: ServiceItem = {
       ...(editingProduct || {}),
@@ -421,6 +467,79 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
     addInstaPhoto(newPhoto);
     setInstaUrl('');
     setShowAddInsta(false);
+  };
+
+  const openAddBlog = () => {
+    setEditingBlog(null);
+    setBlogTitle('');
+    setBlogAuthor('Jenny Alexander');
+    setBlogCategory('Skincare Tips');
+    setBlogImage('https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80');
+    setBlogSummary('');
+    setBlogContent('');
+    setBlogReadTime('5 phút đọc');
+    setBlogTags('skincare, spa, lam-dep');
+    setShowAddBlog(true);
+    setTimeout(() => {
+      blogFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
+
+  const openEditBlog = (b: BlogArticle) => {
+    setEditingBlog(b);
+    setBlogTitle(b.title);
+    setBlogAuthor(b.author || 'Lumé Spa');
+    setBlogCategory(b.category || 'Skincare Tips');
+    setBlogImage(b.image || '');
+    setBlogSummary(b.summary || '');
+    setBlogContent(b.content || '');
+    setBlogReadTime(b.readTime || '5 phút đọc');
+    setBlogTags((b.tags || []).join(', '));
+    setShowAddBlog(true);
+    setTimeout(() => {
+      blogFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
+
+  const handleSaveBlog = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!blogTitle.trim()) {
+      alert('Vui lòng nhập tiêu đề bài viết!');
+      return;
+    }
+
+    const tagsArray = blogTags.split(',').map(t => t.trim()).filter(Boolean);
+
+    const blogData: BlogArticle = {
+      id: editingBlog ? editingBlog.id : `blog-${Date.now()}`,
+      title: blogTitle.trim(),
+      author: blogAuthor.trim() || 'Lumé Spa',
+      date: editingBlog ? editingBlog.date : new Date().toLocaleDateString('vi-VN', { day: '2-digit', month: 'long', year: 'numeric' }),
+      category: blogCategory.trim() || 'Chăm sóc da',
+      image: blogImage.trim() || 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80',
+      summary: blogSummary.trim() || blogTitle.trim(),
+      content: blogContent.trim() || blogSummary.trim() || blogTitle.trim(),
+      readTime: blogReadTime.trim() || '5 phút đọc',
+      views: editingBlog ? (editingBlog.views || 120) : Math.floor(100 + Math.random() * 500),
+      tags: tagsArray.length > 0 ? tagsArray : ['skincare', 'lumé'],
+    };
+
+    if (editingBlog) {
+      updateBlogArticle(blogData);
+      alert('Cập nhật bài viết thành công!');
+    } else {
+      addBlogArticle(blogData);
+      alert('Thêm bài viết mới thành công!');
+    }
+
+    setShowAddBlog(false);
+    setEditingBlog(null);
+  };
+
+  const handleDeleteBlog = (blogId: string) => {
+    if (window.confirm('Bạn có chắc chắn muốn xóa bài viết này không?')) {
+      deleteBlogArticle(blogId);
+    }
   };
 
   if (!isOpen || !currentUser) return null;
@@ -536,6 +655,18 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
           >
             <Package className="w-4 h-4 text-[#c9a86c]" />
             <span>Danh Mục Sản Phẩm ({(productsCatalog || []).length})</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('blogs')}
+            className={`py-3 px-3 sm:px-4 text-xs font-bold transition-all border-b-2 flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'blogs'
+                ? 'border-[#c9a86c] text-[#3a2f2a] bg-white'
+                : 'border-transparent text-[#6b5c54] hover:text-[#3a2f2a]'
+            }`}
+          >
+            <BookOpen className="w-4 h-4 text-[#c9a86c]" />
+            <span>Quản Lý Bài Viết ({(blogsCatalog || []).length})</span>
           </button>
 
           <button
@@ -1174,9 +1305,12 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                         className="w-full px-3 py-2 text-xs bg-[#f7f1eb] rounded-xl border border-[#ebe3d9]"
                       >
                         <option value="facial">Chăm Sóc Da Facial</option>
+                        <option value="makeup">Trang Điểm (Makeup)</option>
+                        <option value="fragrances">Nước Hoa & Hương Thơm</option>
                         <option value="hair">Chăm Sóc Tóc & Da Đầu</option>
                         <option value="spa">Tinh Dầu Spa & Body</option>
                         <option value="nail">Nail & Sơn Gel Móng</option>
+                        <option value="accessories">Phụ Kiện & Dụng Cụ</option>
                       </select>
                     </div>
 
@@ -1280,91 +1414,397 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                 </form>
               )}
 
-              {/* Danh sách Sản phẩm với Số Lượng Tồn Kho Live & Ảnh */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {(productsCatalog || []).map((p) => {
-                  const stock = p.stockQuantity ?? 50;
-                  const hasDiscount = p.originalPrice && p.originalPrice > p.price;
-                  const discountPct = hasDiscount ? Math.round(((p.originalPrice! - p.price) / p.originalPrice!) * 100) : 0;
+              {/* Category Filter Bar for Admin Products */}
+              <div className="bg-white p-3 rounded-2xl border border-[#ebe3d9] flex flex-wrap items-center gap-1.5 text-xs">
+                <span className="text-[#6b5c54] font-bold text-[11px] mr-1 flex items-center gap-1">
+                  <Tag className="w-3.5 h-3.5 text-[#c9a86c]" /> Lọc Danh Mục:
+                </span>
+                {[
+                  { id: 'all', label: `Tất Cả (${productsCatalog.length})` },
+                  { id: 'facial', label: '💆 Chăm Sóc Da' },
+                  { id: 'makeup', label: '💄 Trang Điểm' },
+                  { id: 'fragrances', label: '🌸 Nước Hoa' },
+                  { id: 'hair', label: '✂️ Tóc & Da Đầu' },
+                  { id: 'spa', label: '🪷 Body & Massage' },
+                  { id: 'nail', label: '💅 Nail & Móng' },
+                  { id: 'accessories', label: '✨ Phụ Kiện' },
+                ].map((cat) => {
+                  const isActive = adminProdCategoryFilter === cat.id;
+                  const count = cat.id === 'all'
+                    ? productsCatalog.length
+                    : productsCatalog.filter(p => p.category === cat.id).length;
 
                   return (
-                    <div key={p.id} className="bg-white p-4 rounded-2xl border border-[#ebe3d9] flex items-center justify-between shadow-xs gap-3">
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <img
-                          src={p.image}
-                          alt={p.title}
-                          className="w-14 h-14 object-cover rounded-xl border border-[#ebe3d9] shrink-0 shadow-xs"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80';
-                          }}
-                        />
-                        <div className="min-w-0 flex-1">
-                          <div className="font-serif font-bold text-xs text-[#3a2f2a] truncate">{p.title}</div>
-                          <div className="text-[11px] text-[#6b5c54] truncate">{p.subtitle}</div>
-                          <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-                            <span className="text-xs font-extrabold text-[#c9a86c]">{p.price.toLocaleString('vi-VN')} đ</span>
-                            {hasDiscount && (
-                              <>
-                                <span className="line-through text-[#6b5c54]/60 text-[10px]">{p.originalPrice?.toLocaleString('vi-VN')}đ</span>
-                                <span className="px-1.5 py-0.5 bg-rose-500 text-white font-extrabold text-[9px] rounded-md shrink-0">
-                                  -{discountPct}% SALE
+                    <button
+                      key={cat.id}
+                      onClick={() => setAdminProdCategoryFilter(cat.id)}
+                      className={`px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-[#3a2f2a] text-white shadow-xs'
+                          : 'bg-[#f7f1eb] text-[#6b5c54] hover:bg-[#ebe3d9] hover:text-[#3a2f2a]'
+                      }`}
+                    >
+                      {cat.label} {cat.id !== 'all' && `(${count})`}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Danh sách Sản phẩm với Số Lượng Tồn Kho Live & Ảnh */}
+              {(() => {
+                const categoryLabelsMap: Record<string, string> = {
+                  facial: '💆 Chăm Sóc Da',
+                  makeup: '💄 Trang Điểm',
+                  fragrances: '🌸 Nước Hoa',
+                  hair: '✂️ Tóc & Da Đầu',
+                  spa: '🪷 Body & Massage',
+                  nail: '💅 Nail & Móng',
+                  accessories: '✨ Phụ Kiện',
+                };
+
+                const filteredProds = (productsCatalog || []).filter((p) => {
+                  if (adminProdCategoryFilter === 'all') return true;
+                  return p.category === adminProdCategoryFilter;
+                });
+
+                if (filteredProds.length === 0) {
+                  return (
+                    <div className="text-center py-10 bg-white rounded-2xl border border-[#ebe3d9] p-6">
+                      <p className="text-xs text-[#6b5c54]">Không có sản phẩm nào thuộc danh mục này.</p>
+                      <button
+                        onClick={() => setAdminProdCategoryFilter('all')}
+                        className="mt-2 px-3 py-1 bg-[#3a2f2a] text-white text-xs font-bold rounded-lg"
+                      >
+                        Xem tất cả sản phẩm
+                      </button>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {filteredProds.map((p) => {
+                      const stock = p.stockQuantity ?? 50;
+                      const hasDiscount = p.originalPrice && p.originalPrice > p.price;
+                      const discountPct = hasDiscount ? Math.round(((p.originalPrice! - p.price) / p.originalPrice!) * 100) : 0;
+                      const catBadge = categoryLabelsMap[p.category] || p.category;
+
+                      return (
+                        <div key={p.id} className="bg-white p-4 rounded-2xl border border-[#ebe3d9] flex items-center justify-between shadow-xs gap-3">
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <div className="relative shrink-0">
+                              <img
+                                src={p.image}
+                                alt={p.title}
+                                className="w-14 h-14 object-cover rounded-xl border border-[#ebe3d9] shadow-xs"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80';
+                                }}
+                              />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-1.5 mb-0.5">
+                                <span className="px-1.5 py-0.5 bg-amber-50 text-amber-900 border border-amber-200 text-[9px] font-extrabold rounded-md truncate max-w-[120px]">
+                                  {catBadge}
                                 </span>
-                              </>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 mt-1.5">
-                            <span className="text-[10px] text-[#6b5c54] font-semibold">Tồn kho:</span>
-                            <div className="flex items-center gap-1 bg-[#f7f1eb] p-0.5 rounded-lg border border-[#ebe3d9]">
-                              <button
-                                onClick={() => updateProductStock(p.id, Math.max(0, stock - 1))}
-                                className="w-5 h-5 bg-white rounded font-bold text-xs text-[#3a2f2a] hover:bg-[#ebe3d9] flex items-center justify-center transition-colors"
-                                title="Giảm 1"
-                              >
-                                -
-                              </button>
-                              <span className={`px-1.5 text-xs font-extrabold ${stock === 0 ? 'text-rose-600' : stock < 10 ? 'text-amber-600' : 'text-emerald-700'}`}>
-                                {stock}
-                              </span>
-                              <button
-                                onClick={() => updateProductStock(p.id, stock + 1)}
-                                className="w-5 h-5 bg-white rounded font-bold text-xs text-[#3a2f2a] hover:bg-[#ebe3d9] flex items-center justify-center transition-colors"
-                                title="Tăng 1"
-                              >
-                                +
-                              </button>
-                              <button
-                                onClick={() => updateProductStock(p.id, stock + 10)}
-                                className="px-1 text-[9px] font-bold text-emerald-800 hover:underline"
-                                title="Thêm 10"
-                              >
-                                +10
-                              </button>
+                              </div>
+                              <div className="font-serif font-bold text-xs text-[#3a2f2a] truncate">{p.title}</div>
+                              <div className="text-[11px] text-[#6b5c54] truncate">{p.subtitle}</div>
+                              <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                                <span className="text-xs font-extrabold text-[#c9a86c]">{p.price.toLocaleString('vi-VN')} đ</span>
+                                {hasDiscount && (
+                                  <>
+                                    <span className="line-through text-[#6b5c54]/60 text-[10px]">{p.originalPrice?.toLocaleString('vi-VN')}đ</span>
+                                    <span className="px-1.5 py-0.5 bg-rose-500 text-white font-extrabold text-[9px] rounded-md shrink-0">
+                                      -{discountPct}% SALE
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 mt-1.5">
+                                <span className="text-[10px] text-[#6b5c54] font-semibold">Tồn kho:</span>
+                                <div className="flex items-center gap-1 bg-[#f7f1eb] p-0.5 rounded-lg border border-[#ebe3d9]">
+                                  <button
+                                    onClick={() => updateProductStock(p.id, Math.max(0, stock - 1))}
+                                    className="w-5 h-5 bg-white rounded font-bold text-xs text-[#3a2f2a] hover:bg-[#ebe3d9] flex items-center justify-center transition-colors"
+                                    title="Giảm 1"
+                                  >
+                                    -
+                                  </button>
+                                  <span className={`px-1.5 text-xs font-extrabold ${stock === 0 ? 'text-rose-600' : stock < 10 ? 'text-amber-600' : 'text-emerald-700'}`}>
+                                    {stock}
+                                  </span>
+                                  <button
+                                    onClick={() => updateProductStock(p.id, stock + 1)}
+                                    className="w-5 h-5 bg-white rounded font-bold text-xs text-[#3a2f2a] hover:bg-[#ebe3d9] flex items-center justify-center transition-colors"
+                                    title="Tăng 1"
+                                  >
+                                    +
+                                  </button>
+                                  <button
+                                    onClick={() => updateProductStock(p.id, stock + 10)}
+                                    className="px-1 text-[9px] font-bold text-emerald-800 hover:underline"
+                                    title="Thêm 10"
+                                  >
+                                    +10
+                                  </button>
+                                </div>
+                              </div>
                             </div>
                           </div>
+
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={() => openEditProduct(p)}
+                              className="px-2.5 py-1.5 bg-[#f7f1eb] hover:bg-[#ebe3d9] text-[#3a2f2a] rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                              title="Sửa Thông Tin, Danh Mục, Giá & % Sale"
+                            >
+                              <Edit3 className="w-3.5 h-3.5 text-[#c9a86c]" />
+                              <span className="hidden sm:inline text-[11px]">Sửa SP & DM</span>
+                            </button>
+
+                            <button
+                              onClick={() => deleteProduct(p.id)}
+                              className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                              title="Xóa sản phẩm khỏi DB"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* TAB: BLOGS CATALOG MANAGEMENT */}
+          {activeTab === 'blogs' && (
+            <div className="space-y-4">
+              <div className="bg-white p-5 rounded-3xl border border-[#ebe3d9] space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 className="font-serif font-bold text-lg text-[#3a2f2a] flex items-center gap-2">
+                      <BookOpen className="w-5 h-5 text-[#c9a86c]" />
+                      <span>Quản Lý Bài Viết & Tin Tức Lumé Spa</span>
+                    </h3>
+                    <p className="text-xs text-[#6b5c54] mt-0.5">
+                      Đăng bài viết mới, chỉnh sửa nội dung hoặc xóa các bài viết hiển thị ở mục Tin Tức & Blog trên trang chủ.
+                    </p>
+                  </div>
+                  <button
+                    onClick={openAddBlog}
+                    className="px-4 py-2 bg-[#2d4a3e] hover:bg-[#1f352c] text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <PlusCircle className="w-4 h-4" />
+                    <span>Thêm Bài Viết Mới</span>
+                  </button>
+                </div>
+
+                {/* Add / Edit Blog Form */}
+                {showAddBlog && (
+                  <form ref={blogFormRef} onSubmit={handleSaveBlog} className="p-5 bg-[#fbf9f5] rounded-2xl border border-[#c9a86c]/30 space-y-4 animate-in fade-in">
+                    <div className="flex justify-between items-center border-b border-[#ebe3d9] pb-3">
+                      <h4 className="font-serif font-bold text-base text-[#3a2f2a] flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-[#c9a86c]" />
+                        <span>{editingBlog ? 'Chỉnh Sửa Bài Viết' : 'Thêm Bài Viết Mới'}</span>
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowAddBlog(false);
+                          setEditingBlog(null);
+                        }}
+                        className="text-xs text-gray-400 hover:text-gray-600 p-1 cursor-pointer"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Tiêu đề bài viết *</label>
+                        <input
+                          type="text"
+                          required
+                          value={blogTitle}
+                          onChange={(e) => setBlogTitle(e.target.value)}
+                          placeholder="Ví dụ: Bí Quyết Chăm Sóc Da Căng Bóng Mùa Đông"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Tác giả *</label>
+                        <input
+                          type="text"
+                          required
+                          value={blogAuthor}
+                          onChange={(e) => setBlogAuthor(e.target.value)}
+                          placeholder="Chuyên gia Jenny Alexander"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Danh mục *</label>
+                        <select
+                          value={blogCategory}
+                          onChange={(e) => setBlogCategory(e.target.value)}
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        >
+                          <option value="Skincare Tips">Skincare Tips (Chăm sóc da)</option>
+                          <option value="Body Care">Body Care (Chăm sóc cơ thể)</option>
+                          <option value="Beauty Guide">Beauty Guide (Hướng dẫn làm đẹp)</option>
+                          <option value="Phục Hồi Da">Phục Hồi Da (Skin Healing)</option>
+                          <option value="Khuyến Mãi Spa">Khuyến Mãi Spa</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Thời gian đọc</label>
+                        <input
+                          type="text"
+                          value={blogReadTime}
+                          onChange={(e) => setBlogReadTime(e.target.value)}
+                          placeholder="5 phút đọc"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Đường dẫn hình ảnh bìa (URL) *</label>
+                        <input
+                          type="url"
+                          required
+                          value={blogImage}
+                          onChange={(e) => setBlogImage(e.target.value)}
+                          placeholder="https://images.unsplash.com/photo-..."
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Các thẻ bài viết (Tags, phân cách bằng dấu phẩy)</label>
+                        <input
+                          type="text"
+                          value={blogTags}
+                          onChange={(e) => setBlogTags(e.target.value)}
+                          placeholder="skincare, lumé, tre-hoa-da"
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Tóm tắt ngắn (Hiển thị ở trang chủ) *</label>
+                        <textarea
+                          rows={2}
+                          required
+                          value={blogSummary}
+                          onChange={(e) => setBlogSummary(e.target.value)}
+                          placeholder="Tóm tắt ngắn 2-3 câu gây ấn tượng người đọc..."
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c]"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-[#6b5c54] mb-1">Nội dung chi tiết bài viết (Dùng ## cho tiêu đề chính, ### cho mục nhỏ, - cho danh sách) *</label>
+                        <textarea
+                          rows={6}
+                          required
+                          value={blogContent}
+                          onChange={(e) => setBlogContent(e.target.value)}
+                          placeholder="Nội dung bài viết đầy đủ..."
+                          className="w-full px-3 py-2 text-xs bg-white border border-[#ebe3d9] rounded-xl focus:outline-none focus:border-[#c9a86c] font-mono text-xs"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-2 border-t border-[#ebe3d9]">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowAddBlog(false);
+                          setEditingBlog(null);
+                        }}
+                        className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl cursor-pointer"
+                      >
+                        Hủy Bỏ
+                      </button>
+                      <button
+                        type="submit"
+                        className="px-5 py-2 bg-[#2d4a3e] hover:bg-[#1f352c] text-white text-xs font-bold rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Check className="w-4 h-4" />
+                        <span>{editingBlog ? 'Cập Nhật Bài Viết' : 'Lưu Bài Viết'}</span>
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {/* Blog Articles Catalog Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {(blogsCatalog || []).map((b) => (
+                    <div key={b.id} className="bg-white rounded-2xl border border-[#ebe3d9] overflow-hidden flex flex-col justify-between shadow-xs hover:shadow-md transition-shadow">
+                      <div>
+                        <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
+                          <img
+                            src={b.image}
+                            alt={b.title}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&q=80';
+                            }}
+                          />
+                          <span className="absolute top-2.5 left-2.5 bg-[#2d4a3e] text-white text-[10px] font-bold px-2 py-0.5 rounded-md uppercase">
+                            {b.category}
+                          </span>
+                        </div>
+
+                        <div className="p-4 space-y-2">
+                          <div className="flex items-center justify-between text-[11px] text-gray-500">
+                            <span>Tác giả: {b.author}</span>
+                            <span>{b.date}</span>
+                          </div>
+                          <h4 className="font-serif font-bold text-sm text-[#3a2f2a] line-clamp-2 leading-snug">
+                            {b.title}
+                          </h4>
+                          <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
+                            {b.summary}
+                          </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          onClick={() => openEditProduct(p)}
-                          className="px-2.5 py-1.5 bg-[#f7f1eb] hover:bg-[#ebe3d9] text-[#3a2f2a] rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
-                          title="Điều chỉnh Giá & % Sale"
-                        >
-                          <Edit3 className="w-3.5 h-3.5 text-[#c9a86c]" />
-                          <span className="hidden sm:inline text-[11px]">Sửa Giá/Sale</span>
-                        </button>
+                      <div className="p-3 bg-[#fcfbfa] border-t border-[#ebe3d9] flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-gray-500 flex items-center gap-1">
+                          <Eye className="w-3.5 h-3.5 text-gray-400" />
+                          {b.views || 0} xem
+                        </span>
 
-                        <button
-                          onClick={() => deleteProduct(p.id)}
-                          className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                          title="Xóa sản phẩm khỏi DB"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => openEditBlog(b)}
+                            className="px-2.5 py-1 bg-[#f7f1eb] hover:bg-[#ebe3d9] text-[#3a2f2a] text-xs font-semibold rounded-lg flex items-center gap-1 transition-colors cursor-pointer"
+                            title="Sửa bài viết"
+                          >
+                            <Edit3 className="w-3.5 h-3.5 text-[#c9a86c]" />
+                            <span>Sửa</span>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBlog(b.id)}
+                            className="p-1 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                            title="Xóa bài viết"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
+
               </div>
             </div>
           )}
@@ -1947,7 +2387,7 @@ export const AdminPortalModal: React.FC<AdminPortalModalProps> = ({ isOpen, onCl
                           <p className="text-[11px] text-[#6b5c54] truncate">{item.subtitle}</p>
                           <div className="text-xs font-bold text-[#2d4a3e]">
                             {item.price.toLocaleString('vi-VN')}đ
-                            {item.originalPrice && (
+                            {item.originalPrice && item.originalPrice > item.price && (
                               <span className="text-[10px] text-gray-400 line-through ml-1.5">
                                 {item.originalPrice.toLocaleString('vi-VN')}đ
                               </span>

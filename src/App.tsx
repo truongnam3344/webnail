@@ -28,6 +28,7 @@ import { StaffPortalModal } from './components/StaffPortalModal';
 import { SalesPortalModal } from './components/SalesPortalModal';
 import { AccountantPortalModal } from './components/AccountantPortalModal';
 import { AdminPortalModal } from './components/AdminPortalModal';
+import { AllCatalogModal } from './components/AllCatalogModal';
 import { ServiceItem, Appointment } from './types';
 
 function AppContent() {
@@ -56,6 +57,7 @@ function AppContent() {
 
   // Selected Category
   const [activeCategory, setActiveCategory] = useState('all');
+  const [allCatalogModalOpen, setAllCatalogModalOpen] = useState(false);
 
   // Open appropriate portal according to logged in user role
   const handleOpenPortal = () => {
@@ -106,6 +108,7 @@ function AppContent() {
         onOpenLookup={() => setLookupModalOpen(true)}
         onOpenAuth={() => setAuthModalOpen(true)}
         onOpenPortal={handleOpenPortal}
+        onOpenAllCatalog={() => setAllCatalogModalOpen(true)}
       />
 
       {/* Main Content matching video design */}
@@ -130,6 +133,7 @@ function AppContent() {
         <BestSellersSection
           onSelectService={(service) => setSelectedServiceDetail(service)}
           onBookService={handleItemSelect}
+          onOpenAllCatalog={() => setAllCatalogModalOpen(true)}
         />
 
         {/* 5. Summer Glow Deals Countdown */}
@@ -151,7 +155,7 @@ function AppContent() {
         <TestimonialsSection />
 
         {/* 10. Our Latest News & Blogs */}
-        <NewsBlogsSection />
+        <NewsBlogsSection onOpenBooking={handleOpenBooking} />
 
         {/* 11. Follow Us On Instagram */}
         <InstagramGallery />
@@ -244,6 +248,21 @@ function AppContent() {
       <AdminPortalModal
         isOpen={adminPortalOpen}
         onClose={() => setAdminPortalOpen(false)}
+      />
+
+      {/* Tất Cả Sản Phẩm & Dịch Vụ Modal */}
+      <AllCatalogModal
+        isOpen={allCatalogModalOpen}
+        onClose={() => setAllCatalogModalOpen(false)}
+        onSelectItem={(item) => setSelectedServiceDetail(item)}
+        onBookService={(serviceId) => {
+          setAllCatalogModalOpen(false);
+          handleOpenBooking(serviceId);
+        }}
+        onPurchaseProduct={(product) => {
+          setAllCatalogModalOpen(false);
+          setSelectedProductForPurchase(product);
+        }}
       />
     </div>
   );

@@ -350,6 +350,126 @@ const INITIAL_DB_DATA = {
       image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=800&q=80",
       popular: false,
       benefits: ["Chống giòn gãy móng", "Làm mềm xước măng rô", "Hương hoa quả ngọt dịu"]
+    },
+    {
+      id: "lume-lipstick-velvet",
+      category: "makeup",
+      title: "Son Môi Dưỡng Mịn Lụa Velvet Lumé",
+      subtitle: "Son dưỡng có màu tự nhiên & chống khô môi",
+      price: 220000,
+      originalPrice: 320000,
+      duration: 0,
+      stockQuantity: 50,
+      icon: "💄",
+      description: "Son dưỡng nhung lụa nhiều dưỡng chất nuôi dưỡng đôi môi căng mọng, tự nhiên.",
+      image: "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500&q=80",
+      popular: true,
+      benefits: ["Màu sắc tự nhiên", "Chống khô nứt nẻ môi", "Nhiều dưỡng chất thiên nhiên"]
+    },
+    {
+      id: "lume-organic-perfume",
+      category: "fragrances",
+      title: "Nước Hoa Thảo Mộc Lumé Organic Elixir",
+      subtitle: "Hương hoa hồng nhung & tinh dầu gỗ đàn hương",
+      price: 490000,
+      originalPrice: 700000,
+      duration: 0,
+      stockQuantity: 50,
+      icon: "🌸",
+      description: "Nước hoa xịt body lưu hương 12 giờ dịu nhẹ thư thái quyến rũ.",
+      image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=500&q=80",
+      popular: true,
+      benefits: ["Lưu hương 12 tiếng", "Hương thảo mộc quý phái", "Không gây kích ứng da"]
+    },
+    {
+      id: "silk-serum",
+      category: "facial",
+      title: "SilkSerum Serum Collagen",
+      subtitle: "Tinh chất dưỡng căng bóng da & phục hồi",
+      price: 350000,
+      originalPrice: 700000,
+      duration: 0,
+      stockQuantity: 50,
+      icon: "✨",
+      description: "Tinh chất Collagen dạng serum ngấm sâu nuôi dưỡng làn da khỏe mạnh, xóa mờ nếp nhăn.",
+      image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&q=80",
+      popular: true,
+      benefits: ["Mờ thâm mờ nếp nhăn", "Khóa ẩm sâu 24 giờ", "Làn da phát sáng mịn màng"]
+    },
+    {
+      id: "silkskin-serum",
+      category: "facial",
+      title: "SilkSkin Serum Glow",
+      subtitle: "Serum làm sáng da & mờ thâm nám",
+      price: 450000,
+      originalPrice: 600000,
+      duration: 0,
+      stockQuantity: 50,
+      icon: "💎",
+      description: "Chứa Vitamin C tinh khiết 15% cùng Hyaluronic Acid giúp làn da bật tông trắng sáng rạng rỡ.",
+      image: "https://tse3.mm.bing.net/th/id/OIP.eFrezuv-sdHSr72mz5y49gHaNK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
+      popular: true,
+      benefits: ["Làm sáng tông da", "Giảm vết thâm nám", "Tăng cường sức đề kháng cho da"]
+    },
+    {
+      id: "argan-glow",
+      category: "spa",
+      title: "Argan Glow Body Oil",
+      subtitle: "Dầu massage body Argan Morocco",
+      price: 320000,
+      originalPrice: 400000,
+      duration: 0,
+      stockQuantity: 50,
+      icon: "🪷",
+      description: "Chiết xuất từ hạt Argan tươi Morocco nguyên chất giúp mềm da, giảm căng thẳng tuyệt vời.",
+      image: "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=500&q=80",
+      popular: true,
+      benefits: ["Dưỡng ẩm sâu làn da", "Mùi thơm dịu nhẹ thư thái", "Làm mịn màng làn da toàn thân"]
+    },
+    {
+      id: "argan-cream",
+      category: "spa",
+      title: "Argan Cream Nourishing",
+      subtitle: "Kem dưỡng thể chuyên sâu & thơm dịu",
+      price: 280000,
+      originalPrice: 350000,
+      duration: 0,
+      stockQuantity: 50,
+      icon: "🌿",
+      description: "Cấp ẩm 24h giúp da mịn màng như lụa, khóa ẩm tự nhiên không gây bết dính.",
+      image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&q=80",
+      popular: true,
+      benefits: ["Khóa ẩm mịn lụa", "Mùi hương sang trọng", "Thấm nhanh không nhờn"]
+    },
+    {
+      id: "nail-luxury-gel",
+      category: "nail",
+      title: "Bộ Chăm Sóc Móng Gel Luxury",
+      subtitle: "Sơn gel Hàn Quốc & thiết kế móng",
+      price: 180000,
+      originalPrice: 250000,
+      duration: 0,
+      stockQuantity: 50,
+      icon: "💅",
+      description: "Sơn gel lên màu chuẩn, sáng bóng bền đẹp đến 4 tuần không bong tróc.",
+      image: "https://images.unsplash.com/photo-1604654894610-df63bc536371?w=500&q=80",
+      popular: true,
+      benefits: ["Màu sắc bền đẹp", "Bảo vệ móng chắc khỏe", "An toàn chuẩn salon"]
+    },
+    {
+      id: "prod-cream-gold-24k",
+      category: "facial",
+      title: "Kem Dưỡng Da Vàng 24K & Peptide Collagen Lumé",
+      subtitle: "Hũ 50ml - Trẻ hóa & Căng bóng da",
+      price: 680000,
+      originalPrice: 890000,
+      duration: 0,
+      stockQuantity: 45,
+      icon: "🧴",
+      description: "Chiết xuất vàng 24K nguyên chất kết hợp Niacinamide 5% và Peptide kép giúp mờ thâm nám.",
+      image: "https://images.unsplash.com/photo-1608248597262-838d12328827?auto=format&fit=crop&w=800&q=80",
+      popular: true,
+      benefits: ["Mờ thâm mờ nếp nhăn", "Khóa ẩm sâu 24 giờ", "Làn da phát sáng mịn màng"]
     }
   ],
   specialists: [
@@ -480,7 +600,57 @@ const INITIAL_DB_DATA = {
   ],
   newArrivals: [],
   instaPhotos: [],
-  servicesCatalog: []
+  servicesCatalog: [],
+  blogsCatalog: [
+    {
+      id: "blog-1",
+      title: "Your Ultimate Guide to Healthy, Radiant Skin",
+      author: "Jenny Alexander",
+      date: "22 January 2025",
+      category: "Skincare Tips",
+      image: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80",
+      summary: "Bí quyết chăm sóc da hàng ngày tại nhà giúp làn da luôn duy trì độ ẩm tự nhiên, ngăn ngừa lão hóa và phục hồi hàng rào bảo vệ da.",
+      readTime: "5 phút đọc",
+      views: 1240,
+      content: "Làn da khỏe đẹp rạng rỡ không phải là kết quả của một đêm, mà là sự kiên trì chăm sóc mỗi ngày với những sản phẩm phù hợp."
+    },
+    {
+      id: "blog-2",
+      title: "The Best Body Care Products for Every Skin Type",
+      author: "Jenny Alexander",
+      date: "18 January 2025",
+      category: "Body Care",
+      image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80",
+      summary: "Lựa chọn dầu dưỡng body hữu cơ và kem dưỡng phù hợp cho từng mùa trong năm giúp cơ thể luôn ngạt ngào hương thơm dịu nhẹ.",
+      readTime: "7 phút đọc",
+      views: 890,
+      content: "Chăm sóc da toàn thân cũng quan trọng không kém gì chăm sóc da mặt."
+    },
+    {
+      id: "blog-3",
+      title: "Why Sun Protection is Essential for Healthy Skin",
+      author: "Jenny Alexander",
+      date: "12 January 2025",
+      category: "Beauty Guide",
+      image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80",
+      summary: "Tầm quan trọng của việc dùng kem chống nắng phổ rộng mỗi ngày để chống lão hóa sớm, tăng sinh collagen và ngăn ngừa tàn nhang.",
+      readTime: "4 phút đọc",
+      views: 1520,
+      content: "Nhiều người thường bỏ qua kem chống nắng vào những ngày trời râm mát."
+    },
+    {
+      id: "blog-4",
+      title: "Bí Quyết Phục Hồi Làn Da Căng Bóng Với Tinh Chất HA Multi-Hydrating",
+      author: "Dr. Elena Vance",
+      date: "05 February 2025",
+      category: "Facial Care",
+      image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&q=80",
+      summary: "Khám phá liệu trình điện di HA đa tầng tại Lumé Spa kết hợp serum dưỡng da căng bóng chuẩn y khoa.",
+      readTime: "6 phút đọc",
+      views: 2100,
+      content: "Liệu trình điện di tinh chất HA đa tầng tại Lumé Spa là giải pháp cứu tinh cho làn da khô ráp."
+    }
+  ]
 };
 
 async function readDatabase() {
@@ -495,18 +665,27 @@ async function readDatabase() {
       return INITIAL_DB_DATA;
     }
     const parsed = JSON.parse(raw);
+    const existingProdIds = new Set((parsed.productsCatalog || []).map((p: any) => p.id));
+    const missingProds = INITIAL_DB_DATA.productsCatalog.filter(p => !existingProdIds.has(p.id));
+    const mergedProductsCatalog = [...(parsed.productsCatalog || []), ...missingProds];
+
+    const existingBlogIds = new Set((parsed.blogsCatalog || []).map((b: any) => b.id));
+    const missingBlogs = INITIAL_DB_DATA.blogsCatalog.filter(b => !existingBlogIds.has(b.id));
+    const mergedBlogsCatalog = [...(parsed.blogsCatalog || []), ...missingBlogs];
+
     return {
       users: parsed.users || INITIAL_DB_DATA.users,
       loyaltyTiers: parsed.loyaltyTiers || INITIAL_DB_DATA.loyaltyTiers,
       rewardPackages: parsed.rewardPackages || INITIAL_DB_DATA.rewardPackages,
       services: parsed.services || INITIAL_DB_DATA.services,
-      productsCatalog: parsed.productsCatalog || INITIAL_DB_DATA.productsCatalog,
+      productsCatalog: mergedProductsCatalog,
       specialists: parsed.specialists || INITIAL_DB_DATA.specialists,
       appointments: parsed.appointments || INITIAL_DB_DATA.appointments,
       productOrders: parsed.productOrders || INITIAL_DB_DATA.productOrders,
       reviews: parsed.reviews || INITIAL_DB_DATA.reviews,
       newArrivals: parsed.newArrivals || [],
       instaPhotos: parsed.instaPhotos || [],
+      blogsCatalog: mergedBlogsCatalog,
     };
   } catch (err) {
     console.error('[DB READ ERROR - Restoring initial data]', err);
@@ -852,6 +1031,71 @@ async function startServer() {
 
       await writeDatabase(db);
       res.json({ success: true, item: updatedItem });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // BLOGS CATALOG API ENDPOINTS
+  app.get('/api/blogs', async (req, res) => {
+    try {
+      const db = await readDatabase();
+      res.json({ success: true, blogs: db.blogsCatalog || [] });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.post('/api/blogs', async (req, res) => {
+    try {
+      const { blog } = req.body;
+      if (!blog) return res.status(400).json({ error: 'Missing blog payload' });
+
+      const db = await readDatabase();
+      db.blogsCatalog = [blog, ...(db.blogsCatalog || []).filter((b: any) => b.id !== blog.id)];
+      await writeDatabase(db);
+      res.json({ success: true, blog });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.put('/api/blogs/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const db = await readDatabase();
+
+      let updatedItem: any = null;
+      let found = false;
+      db.blogsCatalog = (db.blogsCatalog || []).map((b: any) => {
+        if (b.id === id) {
+          found = true;
+          updatedItem = { ...b, ...updates };
+          return updatedItem;
+        }
+        return b;
+      });
+
+      if (!found) {
+        updatedItem = { id, ...updates };
+        db.blogsCatalog = [updatedItem, ...(db.blogsCatalog || [])];
+      }
+
+      await writeDatabase(db);
+      res.json({ success: true, blog: updatedItem });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete('/api/blogs/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const db = await readDatabase();
+      db.blogsCatalog = (db.blogsCatalog || []).filter((b: any) => b.id !== id);
+      await writeDatabase(db);
+      res.json({ success: true, deletedId: id });
     } catch (err: any) {
       res.status(500).json({ error: err.message });
     }

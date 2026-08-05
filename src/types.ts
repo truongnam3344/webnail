@@ -36,13 +36,13 @@ export interface User {
   registeredAt?: string;
 }
 
-export type ServiceCategory = 'all' | 'spa' | 'facial' | 'nail' | 'hair';
+export type ServiceCategory = 'all' | 'spa' | 'facial' | 'nail' | 'hair' | 'makeup' | 'fragrances' | 'accessories' | string;
 
 export type CatalogItemType = 'service' | 'product';
 
 export interface ServiceItem {
   id: string;
-  category: 'spa' | 'facial' | 'nail' | 'hair';
+  category: 'spa' | 'facial' | 'nail' | 'hair' | 'makeup' | 'fragrances' | 'accessories' | string;
   title: string;
   subtitle?: string;
   price: number;
@@ -152,6 +152,20 @@ export interface Appointment {
   branch: string;
   salesPersonName?: string;
   accountantName?: string;
+}
+
+export interface BlogArticle {
+  id: string;
+  title: string;
+  author: string;
+  date: string;
+  category: string;
+  image: string;
+  summary: string;
+  content?: string;
+  readTime?: string;
+  views?: number;
+  tags?: string[];
 }
 
 export interface Review {

@@ -72,7 +72,7 @@ export const PromotionsSection: React.FC<PromotionsSectionProps> = ({ onApplyPro
                       <span className="text-2xl font-bold text-[#b08d4f] font-sans">
                         {new Intl.NumberFormat('vi-VN').format(promo.discountedPrice)}đ
                       </span>
-                      {promo.originalPrice && (
+                      {promo.originalPrice && promo.originalPrice > promo.discountedPrice && (
                         <span className="text-xs text-[#6b5c54]/70 line-through">
                           {new Intl.NumberFormat('vi-VN').format(promo.originalPrice)}đ
                         </span>

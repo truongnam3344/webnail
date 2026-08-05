@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Star, Heart, ShoppingBag, Eye } from 'lucide-react';
 import { ServiceItem } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 interface BestSellersProps {
   onSelectService: (service: ServiceItem) => void;
   onBookService: (service: ServiceItem) => void;
+  onOpenAllCatalog?: () => void;
 }
 
 const BEST_SELLER_PRODUCTS: (ServiceItem & { discountTag?: string; rating: number; reviewCount: number })[] = [
@@ -110,6 +112,40 @@ const BEST_SELLER_PRODUCTS: (ServiceItem & { discountTag?: string; rating: numbe
     discountTag: '22% Off',
     rating: 4.88,
     reviewCount: 175
+  },
+  {
+    id: 'lume-lipstick-velvet',
+    category: 'makeup',
+    title: 'Son Môi Dưỡng Mịn Lụa Velvet Lumé',
+    subtitle: 'Son dưỡng có màu tự nhiên & chống khô môi',
+    price: 220000,
+    originalPrice: 320000,
+    duration: 0,
+    itemType: 'product',
+    icon: '💄',
+    description: 'Son dưỡng nhung lụa nhiều dưỡng chất nuôi dưỡng đôi môi căng mọng, tự nhiên.',
+    image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500&q=80',
+    popular: true,
+    discountTag: '30% Off',
+    rating: 4.92,
+    reviewCount: 140
+  },
+  {
+    id: 'lume-organic-perfume',
+    category: 'fragrances',
+    title: 'Nước Hoa Thảo Mộc Lumé Organic Elixir',
+    subtitle: 'Hương hoa hồng nhung & tinh dầu gỗ đàn hương',
+    price: 490000,
+    originalPrice: 700000,
+    duration: 0,
+    itemType: 'product',
+    icon: '🌸',
+    description: 'Nước hoa xịt body lưu hương 12 giờ dịu nhẹ thư thái quyến rũ.',
+    image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=500&q=80',
+    popular: true,
+    discountTag: '30% Off',
+    rating: 4.95,
+    reviewCount: 205
   }
 ];
 
@@ -126,8 +162,10 @@ const CATEGORIES = [
 export const BestSellersSection: React.FC<BestSellersProps> = ({
   onSelectService,
   onBookService,
+  onOpenAllCatalog,
 }) => {
   const { t } = useLanguage();
+  const { productsCatalog, servicesCatalog } = useAuth();
   const [activeTab, setActiveTab] = useState('all');
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
 
@@ -146,9 +184,38 @@ export const BestSellersSection: React.FC<BestSellersProps> = ({
     setFavorites((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  const allCatalogItems = [...(productsCatalog || []), ...(servicesCatalog || [])];
+
+  const activeProducts = BEST_SELLER_PRODUCTS.map((p) => {
+    const matched = allCatalogItems.find(c => c.id === p.id || c.title.toLowerCase().trim() === p.title.toLowerCase().trim());
+    if (matched) {
+      const hasDiscount = !!(matched.originalPrice && matched.originalPrice > matched.price);
+      const discountPct = hasDiscount ? Math.round(((matched.originalPrice! - matched.price) / matched.originalPrice!) * 100) : 0;
+      return {
+        ...p,
+        ...matched,
+        price: matched.price,
+        originalPrice: hasDiscount ? matched.originalPrice : undefined,
+        discountTag: hasDiscount ? `${discountPct}% Off` : undefined,
+      };
+    }
+    const hasDiscount = !!(p.originalPrice && p.originalPrice > p.price);
+    return {
+      ...p,
+      originalPrice: hasDiscount ? p.originalPrice : undefined,
+      discountTag: hasDiscount ? p.discountTag : undefined,
+    };
+  });
+
   const filteredProducts = activeTab === 'all'
-    ? BEST_SELLER_PRODUCTS
-    : BEST_SELLER_PRODUCTS.filter((p) => p.category === activeTab || (activeTab === 'makeup' && p.category === 'facial'));
+    ? activeProducts
+    : activeProducts.filter((p) => {
+        if (p.category === activeTab) return true;
+        if (activeTab === 'makeup') return p.category === 'makeup' || p.category === 'facial';
+        if (activeTab === 'fragrances') return p.category === 'fragrances' || p.category === 'spa';
+        if (activeTab === 'hair') return p.category === 'hair';
+        return false;
+      });
 
   return (
     <section id="best-sellers" className="bg-[#f7f4ee] py-16">
@@ -251,7 +318,7 @@ export const BestSellersSection: React.FC<BestSellersProps> = ({
                     <span className="text-sm font-bold text-[#2d4a3e]">
                       {product.price.toLocaleString('vi-VN')}đ
                     </span>
-                    {product.originalPrice && (
+                    {product.originalPrice && product.originalPrice > product.price && (
                       <span className="ml-1.5 text-xs text-gray-400 line-through font-normal">
                         {product.originalPrice.toLocaleString('vi-VN')}đ
                       </span>
@@ -274,6 +341,18 @@ export const BestSellersSection: React.FC<BestSellersProps> = ({
           ))}
         </div>
 
+        {/* View All Catalog Button */}
+        {onOpenAllCatalog && (
+          <div className="mt-10 text-center">
+            <button
+              onClick={onOpenAllCatalog}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#2d4a3e] hover:bg-[#1f342b] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-pointer transform hover:-translate-y-0.5"
+            >
+              <span>Xem Tất Cả Sản Phẩm & Dịch Vụ </span>
+              <span className="text-amber-300">✨</span>
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

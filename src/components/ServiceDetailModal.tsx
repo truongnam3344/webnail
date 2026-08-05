@@ -18,7 +18,7 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
   const isProduct = service.itemType === 'product' || service.duration === 0;
 
   const formattedPrice = new Intl.NumberFormat('vi-VN').format(service.price) + 'đ';
-  const formattedOriginalPrice = service.originalPrice
+  const formattedOriginalPrice = (service.originalPrice && service.originalPrice > service.price)
     ? new Intl.NumberFormat('vi-VN').format(service.originalPrice) + 'đ'
     : null;
 

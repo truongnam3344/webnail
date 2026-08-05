@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowRight, Star, ShoppingBag } from 'lucide-react';
 import { ServiceItem } from '../types';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 interface DealsOfDayProps {
   onBookService: (service: ServiceItem) => void;
@@ -44,6 +45,30 @@ const DEALS_PRODUCTS: (ServiceItem & { discountTag: string; rating: number; revi
 
 export const DealsOfDaySection: React.FC<DealsOfDayProps> = ({ onBookService }) => {
   const { t } = useLanguage();
+  const { productsCatalog, servicesCatalog } = useAuth();
+
+  const allCatalogItems = [...(productsCatalog || []), ...(servicesCatalog || [])];
+
+  const dealsToDisplay = DEALS_PRODUCTS.map((p) => {
+    const matched = allCatalogItems.find(c => c.id === p.id || c.title.toLowerCase().trim() === p.title.toLowerCase().trim());
+    if (matched) {
+      const hasDiscount = !!(matched.originalPrice && matched.originalPrice > matched.price);
+      const discountPct = hasDiscount ? Math.round(((matched.originalPrice! - matched.price) / matched.originalPrice!) * 100) : 0;
+      return {
+        ...p,
+        ...matched,
+        price: matched.price,
+        originalPrice: hasDiscount ? matched.originalPrice : undefined,
+        discountTag: hasDiscount ? `${discountPct}% Off` : undefined,
+      };
+    }
+    const hasDiscount = !!(p.originalPrice && p.originalPrice > p.price);
+    return {
+      ...p,
+      originalPrice: hasDiscount ? p.originalPrice : undefined,
+      discountTag: hasDiscount ? p.discountTag : undefined,
+    };
+  });
 
   return (
     <section className="bg-[#f7f4ee] py-12">
@@ -61,15 +86,17 @@ export const DealsOfDaySection: React.FC<DealsOfDayProps> = ({ onBookService }) 
 
         {/* Top Product Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {DEALS_PRODUCTS.map((product) => (
+          {dealsToDisplay.map((product) => (
             <div
               key={product.id}
               className="bg-white rounded-2xl p-4 sm:p-5 border border-[#e8dfcb] shadow-xs flex flex-col sm:flex-row gap-5 items-center hover:shadow-md transition-shadow"
             >
               <div className="relative w-full sm:w-40 aspect-square rounded-xl bg-[#f5f0e6] overflow-hidden flex-shrink-0">
-                <span className="absolute top-2 left-2 z-10 px-2 py-0.5 bg-[#2d4a3e] text-white text-[10px] font-extrabold rounded-md uppercase">
-                  {product.discountTag}
-                </span>
+                {product.discountTag && product.originalPrice && product.originalPrice > product.price && (
+                  <span className="absolute top-2 left-2 z-10 px-2 py-0.5 bg-[#2d4a3e] text-white text-[10px] font-extrabold rounded-md uppercase">
+                    {product.discountTag}
+                  </span>
+                )}
                 <img
                   src={product.image}
                   alt={product.title}
@@ -97,9 +124,11 @@ export const DealsOfDaySection: React.FC<DealsOfDayProps> = ({ onBookService }) 
                     <span className="text-base font-bold text-[#2d4a3e]">
                       {product.price.toLocaleString('vi-VN')}đ
                     </span>
-                    <span className="ml-2 text-xs text-gray-400 line-through">
-                      {product.originalPrice?.toLocaleString('vi-VN')}đ
-                    </span>
+                    {product.originalPrice && product.originalPrice > product.price && (
+                      <span className="ml-2 text-xs text-gray-400 line-through">
+                        {product.originalPrice.toLocaleString('vi-VN')}đ
+                      </span>
+                    )}
                   </div>
 
                   <button

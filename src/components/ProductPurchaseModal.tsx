@@ -152,7 +152,7 @@ export const ProductPurchaseModal: React.FC<ProductPurchaseModalProps> = ({
                     <span className="text-base font-extrabold text-[#c9a86c]">
                       {productItem.price.toLocaleString('vi-VN')} đ
                     </span>
-                    {productItem.originalPrice && (
+                    {productItem.originalPrice && productItem.originalPrice > productItem.price && (
                       <span className="text-xs text-[#6b5c54] line-through">
                         {productItem.originalPrice.toLocaleString('vi-VN')} đ
                       </span>

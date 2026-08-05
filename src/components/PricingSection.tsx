@@ -125,7 +125,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
             {filteredServices.map((service) => {
               const formattedPrice = new Intl.NumberFormat('vi-VN').format(service.price) + 'đ';
-              const formattedOrigPrice = service.originalPrice
+              const formattedOrigPrice = (service.originalPrice && service.originalPrice > service.price)
                 ? new Intl.NumberFormat('vi-VN').format(service.originalPrice) + 'đ'
                 : null;
 

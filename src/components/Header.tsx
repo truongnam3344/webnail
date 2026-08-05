@@ -9,6 +9,7 @@ interface HeaderProps {
   onOpenLookup: () => void;
   onOpenAuth: () => void;
   onOpenPortal: () => void;
+  onOpenAllCatalog: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,6 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenLookup,
   onOpenAuth,
   onOpenPortal,
+  onOpenAllCatalog,
 }) => {
   const { currentUser, logout } = useAuth();
   const { t } = useLanguage();
@@ -111,7 +113,7 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-3 xl:space-x-6">
+          <nav className="hidden xl:flex items-center space-x-3 2xl:space-x-5">
             {navLinks.map((link) => (
               <a
                 key={link.id}
@@ -120,7 +122,7 @@ export const Header: React.FC<HeaderProps> = ({
                   e.preventDefault();
                   handleNavClick(link.href);
                 }}
-                className={`text-xs xl:text-sm font-medium transition-colors relative py-1 whitespace-nowrap ${
+                className={`text-xs 2xl:text-sm font-medium transition-colors relative py-1 whitespace-nowrap ${
                   activeSection === link.id
                     ? 'text-[#2d4a3e] font-bold'
                     : 'text-[#524943] hover:text-[#2d4a3e]'
@@ -135,7 +137,15 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
 
           {/* Action Buttons & Auth Account */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Tất Cả SP & Dịch Vụ Button */}
+            <button
+              onClick={onOpenAllCatalog}
+              className="hidden lg:inline-flex items-center gap-1.5 text-xs font-bold text-[#b08d4f] hover:text-[#2d4a3e] transition-all py-1.5 px-3 rounded-full bg-amber-50/90 border border-amber-300 hover:bg-amber-100/90 shadow-xs cursor-pointer whitespace-nowrap shrink-0"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#b08d4f] shrink-0" />
+              <span>Tất Cả SP & Dịch Vụ</span>
+            </button>
             
             {/* USER LOGIN / ACCOUNT BADGE */}
             {currentUser ? (
@@ -283,6 +293,17 @@ export const Header: React.FC<HeaderProps> = ({
                 {link.label}
               </a>
             ))}
+
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenAllCatalog();
+              }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-bold text-[#b08d4f] bg-amber-50 rounded-xl border border-amber-300"
+            >
+              <Sparkles className="w-4 h-4 text-[#b08d4f]" />
+              <span>Xem Tất Cả SP & Dịch Vụ</span>
+            </button>
 
             <div className="pt-3 border-t border-[#ebe3d9] flex flex-col space-y-2.5">
               {!currentUser ? (

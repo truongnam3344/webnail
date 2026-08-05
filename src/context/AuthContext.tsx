@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User, UserRole, Appointment, RedeemedVoucher, PointTransaction, ProductOrder, OrderStatus, ServiceItem, Review } from '../types';
+import { User, UserRole, Appointment, RedeemedVoucher, PointTransaction, ProductOrder, OrderStatus, ServiceItem, Review, BlogArticle } from '../types';
 import { SERVICES_DATA } from '../data/servicesData';
 import { RewardPackage } from '../data/rewardsData';
+import { INITIAL_BLOGS_CATALOG } from '../data/blogsData';
 
 export interface InstaPhotoItem {
   id: string;
@@ -136,12 +137,192 @@ export const INITIAL_REVIEWS: Review[] = [
 ];
 
 // Initial default physical products from catalog
-const INITIAL_PRODUCTS_CATALOG: ServiceItem[] = SERVICES_DATA.filter(
-  item => item.itemType === 'product' || item.duration === 0
-).map(p => ({
-  ...p,
-  stockQuantity: p.stockQuantity ?? 50
-}));
+const ALL_PHYSICAL_PRODUCTS: ServiceItem[] = [
+  {
+    id: 'silk-serum',
+    category: 'facial',
+    title: 'SilkSerum Serum Collagen',
+    subtitle: 'Tinh chất dưỡng căng bóng da & phục hồi',
+    price: 350000,
+    originalPrice: 700000,
+    duration: 0,
+    itemType: 'product',
+    icon: '✨',
+    description: 'Tinh chất Collagen dạng serum ngấm sâu nuôi dưỡng làn da khỏe mạnh, xóa mờ nếp nhăn.',
+    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&q=80',
+    popular: true,
+    stockQuantity: 50
+  },
+  {
+    id: 'silkskin-serum',
+    category: 'facial',
+    title: 'SilkSkin Serum Glow',
+    subtitle: 'Serum làm sáng da & mờ thâm nám',
+    price: 450000,
+    originalPrice: 600000,
+    duration: 0,
+    itemType: 'product',
+    icon: '💎',
+    description: 'Chứa Vitamin C tinh khiết 15% cùng Hyaluronic Acid giúp làn da bật tông trắng sáng rạng rỡ.',
+    image: 'https://tse3.mm.bing.net/th/id/OIP.eFrezuv-sdHSr72mz5y49gHaNK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
+    popular: true,
+    stockQuantity: 50
+  },
+  {
+    id: 'argan-glow',
+    category: 'spa',
+    title: 'Argan Glow Body Oil',
+    subtitle: 'Dầu massage body Argan Morocco',
+    price: 320000,
+    originalPrice: 400000,
+    duration: 0,
+    itemType: 'product',
+    icon: '🪷',
+    description: 'Chiết xuất từ hạt Argan tươi Morocco nguyên chất giúp mềm da, giảm căng thẳng tuyệt vời.',
+    image: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=500&q=80',
+    popular: true,
+    stockQuantity: 50
+  },
+  {
+    id: 'argan-cream',
+    category: 'spa',
+    title: 'Argan Cream Nourishing',
+    subtitle: 'Kem dưỡng thể chuyên sâu & thơm dịu',
+    price: 280000,
+    originalPrice: 350000,
+    duration: 0,
+    itemType: 'product',
+    icon: '🌿',
+    description: 'Cấp ẩm 24h giúp da mịn màng như lụa, khóa ẩm tự nhiên không gây bết dính.',
+    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500&q=80',
+    popular: true,
+    stockQuantity: 50
+  },
+  {
+    id: 'nail-luxury-gel',
+    category: 'nail',
+    title: 'Bộ Chăm Sóc Móng Gel Luxury',
+    subtitle: 'Sơn gel Hàn Quốc & thiết kế móng',
+    price: 180000,
+    originalPrice: 250000,
+    duration: 0,
+    itemType: 'product',
+    icon: '💅',
+    description: 'Sơn gel lên màu chuẩn, sáng bóng bền đẹp đến 4 tuần không bong tróc.',
+    image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=500&q=80',
+    popular: true,
+    stockQuantity: 50
+  },
+  {
+    id: 'herbal-shampoo-bot',
+    category: 'hair',
+    title: 'Dầu Gội Dưỡng Sinh Thảo Dược',
+    subtitle: 'Sô-cô-la & Bồ kết sả chanh tươi',
+    price: 250000,
+    originalPrice: 320000,
+    duration: 0,
+    itemType: 'product',
+    icon: '✂️',
+    description: 'Nấu thủ công từ bồ kết, vỏ bưởi, mần trầu giúp giảm gãy rụng và nuôi dưỡng chân tóc.',
+    image: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=500&q=80',
+    popular: true,
+    stockQuantity: 50
+  },
+  {
+    id: 'aquafresh-wellness',
+    category: 'facial',
+    title: 'Aquafresh Wellness Serum',
+    subtitle: 'Tinh chất cấp nước khóa ẩm 72h',
+    price: 350000,
+    originalPrice: 700000,
+    duration: 0,
+    itemType: 'product',
+    icon: '💧',
+    description: 'Cấp ẩm tức thì cho da khô mệt mỏi, tái tạo lớp màng lipid bảo vệ da.',
+    image: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500&q=80',
+    stockQuantity: 50
+  },
+  {
+    id: 'velvet-rose',
+    category: 'facial',
+    title: 'Velvet Rose Elixir',
+    subtitle: 'Dầu dưỡng hoa hồng nhung trắng da',
+    price: 450000,
+    originalPrice: 900000,
+    duration: 0,
+    itemType: 'product',
+    icon: '🌹',
+    description: 'Chống oxy hóa mạnh mẽ, xua tan sắc tố sẫm màu mang lại làn da trắng hồng.',
+    image: 'https://th.bing.com/th/id/OIP.Dau8hngwWSNnUeB5t6Z-lwHaJ2?r=0&o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3',
+    stockQuantity: 50
+  },
+  {
+    id: 'herbal-haven',
+    category: 'spa',
+    title: 'Herbal Haven Body Oil',
+    subtitle: 'Dầu thảo dược trị liệu nhức mỏi',
+    price: 280000,
+    originalPrice: 560000,
+    duration: 0,
+    itemType: 'product',
+    icon: '🌿',
+    description: 'Ấn huyệt trị liệu xua tan mệt mỏi cơ khớp, lưu thông khí huyết tốt.',
+    image: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=500&q=80',
+    stockQuantity: 50
+  },
+  {
+    id: 'marine-collagen-mask',
+    category: 'facial',
+    title: 'Marine Collagen Hydrogel Mask',
+    subtitle: 'Mặt nạ Collagen biển phục hồi màng da',
+    price: 320000,
+    originalPrice: 640000,
+    duration: 0,
+    itemType: 'product',
+    icon: '🌊',
+    description: 'Giàu vi khoáng biển khôi phục độ đàn hồi và tươi trẻ tự nhiên.',
+    image: 'https://tse3.mm.bing.net/th/id/OIP.h6Iow8BSh99AthTNIwMkVgHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
+    stockQuantity: 50
+  },
+  {
+    id: 'lume-lipstick-velvet',
+    category: 'makeup',
+    title: 'Son Môi Dưỡng Mịn Lụa Velvet Lumé',
+    subtitle: 'Son dưỡng có màu tự nhiên & chống khô môi',
+    price: 220000,
+    originalPrice: 320000,
+    duration: 0,
+    itemType: 'product',
+    icon: '💄',
+    description: 'Son dưỡng nhung lụa nhiều dưỡng chất nuôi dưỡng đôi môi căng mọng, tự nhiên.',
+    image: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=500&q=80',
+    popular: true,
+    stockQuantity: 50
+  },
+  {
+    id: 'lume-organic-perfume',
+    category: 'fragrances',
+    title: 'Nước Hoa Thảo Mộc Lumé Organic Elixir',
+    subtitle: 'Hương hoa hồng nhung & tinh dầu gỗ đàn hương',
+    price: 490000,
+    originalPrice: 700000,
+    duration: 0,
+    itemType: 'product',
+    icon: '🌸',
+    description: 'Nước hoa xịt body lưu hương 12 giờ dịu nhẹ thư thái quyến rũ.',
+    image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=500&q=80',
+    popular: true,
+    stockQuantity: 50
+  }
+];
+
+const INITIAL_PRODUCTS_CATALOG: ServiceItem[] = [
+  ...ALL_PHYSICAL_PRODUCTS,
+  ...SERVICES_DATA.filter(item => item.itemType === 'product' || item.duration === 0).map(p => ({
+    ...p,
+    stockQuantity: p.stockQuantity ?? 50
+  }))
+].filter((item, index, self) => index === self.findIndex(t => t.id === item.id));
 
 // Demo Preset Accounts for easy role testing
 export const DEMO_USERS: Record<UserRole, User> = {
@@ -377,6 +558,7 @@ interface AuthContextType {
   reviews: Review[];
   newArrivals: NewArrivalItem[];
   instaPhotos: InstaPhotoItem[];
+  blogsCatalog: BlogArticle[];
   addAppointment: (appointment: Appointment) => void;
   addProductOrder: (order: ProductOrder) => void;
   addProduct: (product: ServiceItem) => void;
@@ -391,6 +573,9 @@ interface AuthContextType {
   deleteNewArrival: (itemId: string) => void;
   addInstaPhoto: (photo: InstaPhotoItem) => void;
   deleteInstaPhoto: (photoId: string) => void;
+  addBlogArticle: (blog: BlogArticle) => void;
+  updateBlogArticle: (blog: BlogArticle) => void;
+  deleteBlogArticle: (blogId: string) => void;
   addReview: (review: Omit<Review, 'id' | 'date'> & { id?: string; date?: string }) => void;
   deleteReview: (reviewId: string) => void;
   updateReviewStatus: (reviewId: string, status: 'approved' | 'pending' | 'hidden') => void;
@@ -441,7 +626,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const saved = localStorage.getItem('lume_products_catalog');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const existingIds = new Set(parsed.map((p: ServiceItem) => p.id));
+          const missing = INITIAL_PRODUCTS_CATALOG.filter(p => !existingIds.has(p.id));
+          const merged = [...parsed, ...missing];
+          if (missing.length > 0) {
+            localStorage.setItem('lume_products_catalog', JSON.stringify(merged));
+          }
+          return merged;
+        }
       } catch (e) {
         return INITIAL_PRODUCTS_CATALOG;
       }
@@ -453,7 +647,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const saved = localStorage.getItem('lume_services_catalog');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const initialServices = SERVICES_DATA.filter(s => s.itemType !== 'product' && s.duration > 0);
+          const existingIds = new Set(parsed.map((s: ServiceItem) => s.id));
+          const missing = initialServices.filter(s => !existingIds.has(s.id));
+          return [...parsed, ...missing];
+        }
       } catch (e) {
         return SERVICES_DATA.filter(s => s.itemType !== 'product' && s.duration > 0);
       }
@@ -489,6 +689,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return INITIAL_INSTA_PHOTOS;
   });
 
+  const [blogsCatalog, setBlogsCatalog] = useState<BlogArticle[]>(() => {
+    const saved = localStorage.getItem('lume_blogs_catalog');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const existingIds = new Set(parsed.map((b: BlogArticle) => b.id));
+          const missing = INITIAL_BLOGS_CATALOG.filter(b => !existingIds.has(b.id));
+          return [...parsed, ...missing];
+        }
+      } catch (e) {
+        return INITIAL_BLOGS_CATALOG;
+      }
+    }
+    return INITIAL_BLOGS_CATALOG;
+  });
+
   // Fetch live database tables on mount
   useEffect(() => {
     fetch('/api/database')
@@ -498,12 +715,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (data.db.users && Array.isArray(data.db.users)) setAllUsers(data.db.users);
           if (data.db.appointments && Array.isArray(data.db.appointments)) setAppointments(data.db.appointments);
           if (data.db.productOrders && Array.isArray(data.db.productOrders)) setProductOrders(data.db.productOrders);
-          if (data.db.productsCatalog && Array.isArray(data.db.productsCatalog)) setProductsCatalog(data.db.productsCatalog);
+          if (data.db.productsCatalog && Array.isArray(data.db.productsCatalog)) {
+            const existingIds = new Set(data.db.productsCatalog.map((p: ServiceItem) => p.id));
+            const missing = INITIAL_PRODUCTS_CATALOG.filter(p => !existingIds.has(p.id));
+            setProductsCatalog([...data.db.productsCatalog, ...missing]);
+          }
           const servs = data.db.services || data.db.servicesCatalog;
           if (servs && Array.isArray(servs) && servs.length > 0) setServicesCatalog(servs);
           if (data.db.reviews && Array.isArray(data.db.reviews)) setReviews(data.db.reviews);
           if (data.db.newArrivals && Array.isArray(data.db.newArrivals) && data.db.newArrivals.length > 0) setNewArrivals(data.db.newArrivals);
           if (data.db.instaPhotos && Array.isArray(data.db.instaPhotos) && data.db.instaPhotos.length > 0) setInstaPhotos(data.db.instaPhotos);
+          if (data.db.blogsCatalog && Array.isArray(data.db.blogsCatalog) && data.db.blogsCatalog.length > 0) {
+            const existingIds = new Set(data.db.blogsCatalog.map((b: BlogArticle) => b.id));
+            const missing = INITIAL_BLOGS_CATALOG.filter(b => !existingIds.has(b.id));
+            setBlogsCatalog([...data.db.blogsCatalog, ...missing]);
+          }
         }
       })
       .catch(err => console.warn('[DB INITIAL FETCH WARN]', err));
@@ -944,6 +1170,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }).catch(err => console.error('[DB DELETE SERVICE ERROR]', err));
   };
 
+  const addBlogArticle = (newBlog: BlogArticle) => {
+    setBlogsCatalog(prev => {
+      const updated = [newBlog, ...prev.filter(b => b.id !== newBlog.id)];
+      localStorage.setItem('lume_blogs_catalog', JSON.stringify(updated));
+      return updated;
+    });
+    fetch('/api/blogs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ blog: newBlog }),
+    }).catch(err => console.error('[DB ADD BLOG ERROR]', err));
+  };
+
+  const updateBlogArticle = (updatedBlog: BlogArticle) => {
+    setBlogsCatalog(prev => {
+      const updated = prev.map(b => (b.id === updatedBlog.id ? updatedBlog : b));
+      localStorage.setItem('lume_blogs_catalog', JSON.stringify(updated));
+      return updated;
+    });
+    fetch(`/api/blogs/${updatedBlog.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedBlog),
+    }).catch(err => console.error('[DB UPDATE BLOG ERROR]', err));
+  };
+
+  const deleteBlogArticle = (blogId: string) => {
+    setBlogsCatalog(prev => {
+      const updated = prev.filter(b => b.id !== blogId);
+      localStorage.setItem('lume_blogs_catalog', JSON.stringify(updated));
+      return updated;
+    });
+    fetch(`/api/blogs/${blogId}`, {
+      method: 'DELETE',
+    }).catch(err => console.error('[DB DELETE BLOG ERROR]', err));
+  };
+
   const updateAppointmentStatus = (
     id: string,
     status: OrderStatus,
@@ -1205,6 +1468,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         reviews,
         newArrivals,
         instaPhotos,
+        blogsCatalog,
         addAppointment,
         addProductOrder,
         addProduct,
@@ -1219,6 +1483,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deleteNewArrival,
         addInstaPhoto,
         deleteInstaPhoto,
+        addBlogArticle,
+        updateBlogArticle,
+        deleteBlogArticle,
         addReview,
         deleteReview,
         updateReviewStatus,
